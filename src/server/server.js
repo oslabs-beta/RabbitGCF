@@ -9,7 +9,7 @@ const graphController = require('./controllers/graphController');
 const authController = require('./controllers/authController');
 
 app.use(express.json());
-// app.use(express.static(path.join(__dirname, './../client')));
+app.use(express.static(path.join(__dirname, './../client')));
 
 // app.get('/', (req, res) => {
 
@@ -33,6 +33,6 @@ app.use((err, req, res) => {
 });
 
 // set up the server to listen for http requests
-server.listen(PORT, () => {
+app.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`);
 });
