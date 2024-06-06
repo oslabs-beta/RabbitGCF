@@ -1,7 +1,5 @@
 const { BigQuery } = require('@google-cloud/bigquery');
 
-const API_KEY = 'AIzaSyBxY8tHUkKv72BbkACwsP9k3HBBDFB5LPY';
-
 // this project id for testing purposes
 const projectId = 'refined-engine-424416-p7';
 const bigquery = new BigQuery();
