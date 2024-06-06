@@ -7,13 +7,14 @@ const app = express();
 const metricController = require('./controllers/metricController');
 const graphController = require('./controllers/graphController');
 const authController = require('./controllers/authController');
+const bigQuery = require('./controllers/bigQuery');
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, './../client')));
 
-// app.get('/', (req, res) => {
-
-// })
+app.get('/bigquery/datasets', bigQuery.getDatasets, (req, res) => {
+  return res.status(200).send(res.locals.datasets);
+});
 
 // catch-all route handler
 app.use((req, res) => {
