@@ -4,7 +4,7 @@ const path = require('path');
 const PORT = 3000;
 const app = express();
 
-const metricController = require('./controllers/metricController');
+const metricsController = require('./controllers/metrics');
 const graphController = require('./controllers/graphController');
 const authController = require('./controllers/authController');
 const bigQuery = require('./controllers/bigQuery');
@@ -12,9 +12,13 @@ const bigQuery = require('./controllers/bigQuery');
 app.use(express.json());
 app.use(express.static(path.join(__dirname, './../client')));
 
-app.get('/bigquery/datasets', bigQuery.getDatasets, (req, res) => {
-  return res.status(200).send(res.locals.datasets);
+app.post('/bigquery/datasets/:projectId', bigQuery.getDatasets, (req, res) => {
+  return res.status(200).send(res.locals.datasetList);
 });
+
+app.get('/metrics/timeseries/:projectId', metricsController.getMetrics, (req, res) => {
+  return res.status(200).send(res.locals.metrics);
+})
 
 // catch-all route handler
 app.use((req, res) => {
