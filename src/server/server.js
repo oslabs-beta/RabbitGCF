@@ -1,6 +1,10 @@
 const express = require('express');
+const passport = require('passport');
+const session  = require('express-session');
 const path = require('path');
+const dotenv = require('dotenv');
 
+dotenv.config({ path: './.env' });
 const PORT = 3000;
 const app = express();
 
@@ -10,10 +14,23 @@ const authController = require('./controllers/authController');
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, './../client')));
+app.use(session({ 
+  secret: process.env.SESSION_SECRET,
+  resave: true,
+  saveUninitialized: true
+}));
+
+// Initialize passport and sessions
+app.use(passport.initialize());
+app.use(passport.session());
 
 // app.get('/', (req, res) => {
 
 // })
+
+// routers
+app.use('/auth', require('./routers/authRouter'));
+app.use('/user', require('./routers/userRouter'));
 
 // catch-all route handler
 app.use((req, res) => {
