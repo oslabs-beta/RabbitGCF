@@ -1,6 +1,10 @@
 const express = require('express');
+const passport = require('passport');
+const session  = require('express-session');
 const path = require('path');
+const dotenv = require('dotenv');
 
+dotenv.config({ path: './.env' });
 const PORT = 3000;
 const app = express();
 
@@ -11,6 +15,15 @@ const bigQuery = require('./controllers/bigQuery');
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, './../client')));
+app.use(session({ 
+  secret: process.env.SESSION_SECRET,
+  resave: true,
+  saveUninitialized: true
+}));
+
+// Initialize passport and sessions
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.post('/bigquery/datasets/:projectId', bigQuery.getDatasets, (req, res) => {
   return res.status(200).send(res.locals.datasetList);
@@ -19,6 +32,10 @@ app.post('/bigquery/datasets/:projectId', bigQuery.getDatasets, (req, res) => {
 app.get('/metrics/timeseries/:projectId', metricsController.getMetrics, (req, res) => {
   return res.status(200).send(res.locals.metrics);
 })
+
+// routers
+app.use('/auth', require('./routers/authRouter'));
+app.use('/user', require('./routers/userRouter'));
 
 // catch-all route handler
 app.use((req, res) => {
