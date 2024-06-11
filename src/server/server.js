@@ -8,9 +8,10 @@ dotenv.config({ path: './.env' });
 const PORT = 3000;
 const app = express();
 
-const metricController = require('./controllers/metricController');
+const metricsController = require('./controllers/metrics');
 const graphController = require('./controllers/graphController');
 const authController = require('./controllers/authController');
+const bigQuery = require('./controllers/bigQuery');
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, './../client')));
@@ -24,9 +25,13 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// app.get('/', (req, res) => {
+app.post('/bigquery/datasets/:projectId', bigQuery.getDatasets, (req, res) => {
+  return res.status(200).send(res.locals.datasetList);
+});
 
-// })
+app.get('/metrics/timeseries/:projectId', metricsController.getMetrics, (req, res) => {
+  return res.status(200).send(res.locals.metrics);
+})
 
 // routers
 app.use('/auth', require('./routers/authRouter'));
