@@ -9,7 +9,7 @@ const HomePage = () => {
   return(
     <div>
       <NavBar />
-      <Box component="main" sx={{ flexGrow: 1, p: '0px 0px 0px 80px'}}>
+      <Box component="main" sx={{ flexGrow: 1, p: '0px 0px 0px 80px',}}>
         <DrawerHeader />
         <h1>Home Page</h1>
         <Typography paragraph>

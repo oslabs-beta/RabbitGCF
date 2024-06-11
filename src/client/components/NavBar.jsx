@@ -3,6 +3,7 @@ import { styled, useTheme } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 
 import DrawerHeader from './DrawerHeader.jsx';
+import AccountMenu from './AccountMenu.jsx';
 import Box from '@mui/material/Box';
 import MuiDrawer from '@mui/material/Drawer';
 import MuiAppBar from '@mui/material/AppBar';
@@ -17,12 +18,12 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
-import MenuIcon from '@mui/icons-material/Menu'
-import HomeIcon from '@mui/icons-material/Home'
-import AssessmentIcon from '@mui/icons-material/Assessment'
-import InsightsIcon from '@mui/icons-material/Insights'
-import AccountCircleIcon from '@mui/icons-material/AccountCircle'
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import MenuIcon from '@mui/icons-material/Menu';
+import HomeIcon from '@mui/icons-material/Home';
+import AssessmentIcon from '@mui/icons-material/Assessment';
+import InsightsIcon from '@mui/icons-material/Insights';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 const drawerWidth = 240;
 
@@ -135,15 +136,7 @@ export default function NavBar() {
           <Typography variant="h6" noWrap component="div">
             RabbitGCF
           </Typography>
-          <IconButton
-            color="inherit"
-            onClick={profileClick}
-            sx={{
-              marginLeft: 'auto',
-            }}
-          >
-            <AccountCircleIcon fontSize='large'/>
-          </IconButton>
+          <AccountMenu />
         </Toolbar>
       </AppBar>
       <Drawer variant="permanent" open={open}>
