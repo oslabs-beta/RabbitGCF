@@ -28,8 +28,7 @@ passport.use(new GoogleStrategy({
       // console.log(req.user);
       return done(null, user, profile);
     }
-}
-));
+}));
 
 passport.serializeUser(function(user, done) {
     done(null, user);
