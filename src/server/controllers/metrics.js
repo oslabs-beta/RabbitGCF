@@ -14,10 +14,10 @@ const metricsController = {
     const { projectId } = req.params;
     console.log(`getMetrics projectId: ${projectId}`);
 
-    const requests = metrics.map(el => {
+    const requests = metrics.map((el, index) => {
       return {
         name: client.projectPath(projectId),
-        filter: metrics[el],
+        filter: metrics[index],
         interval: {
           startTime: {
             // limit results to last 30 minutes
@@ -32,8 +32,9 @@ const metricsController = {
     console.log(`getMetrics request objects: ${requests}`);
 
     try {
-      const responses = requests.map(async el => {
-        const apiCall = await client.listTimeSeries(requests[el]);
+      const responses = requests.map(async (el, index) => {
+        console.log(`This is requests[el]: ${requests[index]}`);
+        const apiCall = await client.listTimeSeries(requests[index]);
         console.log(`listTimeSeries response for ${el}: ${apiCall}`);
         return apiCall;
       });

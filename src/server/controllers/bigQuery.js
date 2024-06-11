@@ -71,6 +71,7 @@ const bigQuery = {
     try {
       const datasetList = await fetch(url);
       console.log(`Fetched dataset list: ${datasetList}`);
+      // console.log(`First dataset in fetched list: ${datasetList.datasets[0].id}`);
       
       if (datasetList) {
         res.locals.datasetList = datasetList;

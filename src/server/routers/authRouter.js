@@ -28,7 +28,7 @@ router.get('/google/failure', (req, res) => {
 // Google OAuth, step 3: Set cookies for JWT
 router.get('/set', (req, res, next) => {
   // console.log(Object.keys(req.user));
-  console.log(req.user._id);
+  // console.log(req.user._id);
   next();
 },
 (req, res) => {
