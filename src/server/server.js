@@ -38,7 +38,7 @@ app.use('/auth', require('./routers/authRouter'));
 app.use('/user', require('./routers/userRouter'));
 
 // catch-all route handler
-app.use((req, res) => {
+app.use('*', (req, res) => {
   res.status(404).send('!!Page not found!!');
 });
 
