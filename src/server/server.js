@@ -11,12 +11,12 @@ const authController = require('./controllers/authController');
 app.use(express.json());
 app.use(express.static(path.join(__dirname, './../client')));
 
-// app.get('/', (req, res) => {
-
+// app.get('/*', (req, res) => {
+//   return res.status(200).sendFile(path.join(__dirname, './../client/index.html'));
 // })
 
 // catch-all route handler
-app.use((req, res) => {
+app.use('*', (req, res) => {
   res.status(404).send('!!Page not found!!');
 });
 
