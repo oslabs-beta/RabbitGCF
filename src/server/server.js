@@ -15,6 +15,10 @@ const bigQuery = require('./controllers/bigQuery');
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, './../client')));
+
+// app.get('/*', (req, res) => {
+//   return res.status(200).sendFile(path.join(__dirname, './../client/index.html'));
+// })
 app.use(session({ 
   secret: process.env.SESSION_SECRET,
   resave: true,
@@ -38,7 +42,7 @@ app.use('/auth', require('./routers/authRouter'));
 app.use('/user', require('./routers/userRouter'));
 
 // catch-all route handler
-app.use((req, res) => {
+app.use('*', (req, res) => {
   res.status(404).send('!!Page not found!!');
 });
 
