@@ -111,11 +111,6 @@ export default function NavBar() {
     navigate('/forcast');
   }
 
-  function profileClick() {
-    console.log('profile clicked')
-    // navigate('/profile');
-  }
-
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
