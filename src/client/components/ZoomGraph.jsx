@@ -10,6 +10,17 @@ import {
   ReferenceArea
 } from "recharts";
 
+// we will want a function that converts real data
+// into an array of objects
+// 1 data point = 1 object
+// we should have a data state hook outside of this func
+// data, setData
+// we also should have variables set to data.time, data.memory, data.runtime
+// inside func, an empty array
+// loop through our data
+// push into our array data.time[i] & data.memory[i] & data.runtime[i]
+// set our state data 
+
 const initialData = [
   { name: 1, cost: 4.11, impression: 100 },
   { name: 2, cost: 2.39, impression: 120 },

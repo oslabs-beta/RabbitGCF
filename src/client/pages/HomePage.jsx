@@ -1,7 +1,7 @@
 import React from 'react';
 import NavBar from '../components/NavBar.jsx';
-import DummyGraph from '../components/DummyGraph.jsx'
-import ZoomGraph from '../components/ZoomGraph.jsx'
+// import DummyGraph from '../components/DummyGraph.jsx';
+import ZoomGraph from '../components/ZoomGraph.jsx';
 
 const HomePage = () => {
 
