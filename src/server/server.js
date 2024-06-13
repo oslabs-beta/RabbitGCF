@@ -30,11 +30,11 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.post('/bigquery/datasets/:projectId', bigQuery.getDatasets, (req, res) => {
-  return res.status(200).send(res.locals.datasetList);
+  return res.status(200).send(res.locals);
 });
 
-app.get('/metrics/timeseries/:projectId', metricsController.getMetrics, (req, res) => {
-  return res.status(200).send(res.locals.metrics);
+app.get('/metrics/:projectId', metricsController.getFuncs, metricsController.executionCount, metricsController.executionTimes, metricsController.userMemoryBytes, (req, res) => {
+  return res.status(200).send(res.locals);
 })
 
 // routers
