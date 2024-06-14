@@ -1,10 +1,35 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import NavBar from '../components/NavBar.jsx';
 import Box from '@mui/material/Box';
 import DrawerHeader from '../components/DrawerHeader.jsx';
 import Typography from '@mui/material/Typography';
+import GraphComponent from '../components/ZoomGraph.jsx';
 
 const MetricsPage = () => {
+  const [runtimeData, setRuntimeData] = useState([]);
+  const [memoryData, setMemoryData] = useState([]);
+
+  useEffect(() => {
+    fetch('/api/runtime')
+      .then(res => {
+        if (!res.ok) {
+          throw new Error('Network response was not ok');
+        };
+        return res.json();
+      })
+      .then(data => setRuntimeData(data))
+      .catch(error => console.error('Error fetching runtime data: ', error));
+
+    fetch('/api/memory')
+      .then(res => {
+        if (!res.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return res.json()
+    })
+      .then(data => setMemoryData(data))
+      .catch(error => console.error('Error fetching memory data: ', error));
+  }, []);
 
   return(
     <div>
@@ -16,18 +41,28 @@ const MetricsPage = () => {
           These are your metrics
         </Typography>
         <Typography paragraph>
-          Metric 1:
+          Runtime:
         </Typography>
-        <Box sx={{bgcolor: 'skyblue', width: 300, height: 300}}>
-
-        </Box>
+        {/* <Box sx={{bgcolor: 'skyblue', width: 300, height: 300}}> */}
+          <GraphComponent
+            data={runtimeData}
+            dataKey="runtime"
+            statusKey="status"
+            label="Runtime (ms)"
+          />
+        {/* </Box> */}
 
         <Typography paragraph>
-          Metric 2:
+          Memory:
         </Typography>
-        <Box sx={{bgcolor: 'pink', width: 300, height: 300}}>
-
-        </Box>
+        {/* <Box sx={{bgcolor: 'pink', width: 300, height: 300}}> */}
+          <GraphComponent
+            data={memoryData}
+            dataKey="memory"
+            statusKey="status"
+            label="Memory (MB)"
+          />
+        {/* </Box> */}
       </Box>
     </div>
   );

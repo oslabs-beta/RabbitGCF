@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const apiRouter = require('./routes/apiRouter');
 
 const PORT = 3000;
 const app = express();
@@ -14,6 +15,7 @@ app.use(express.static(path.join(__dirname, './../client')));
 // app.get('/*', (req, res) => {
 //   return res.status(200).sendFile(path.join(__dirname, './../client/index.html'));
 // })
+app.use('/api', apiRouter);
 
 // catch-all route handler
 app.use('*', (req, res) => {
