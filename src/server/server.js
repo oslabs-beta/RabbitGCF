@@ -29,13 +29,25 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.post('/bigquery/datasets/:projectId', bigQuery.getDatasets, (req, res) => {
+// app.post('/bigquery/datasets/:projectId', bigQuery.getDatasets, (req, res) => {
+//   return res.status(200).send(res.locals);
+// });
+
+app.get('/api/metrics/funcs/:projectId', metricsController.getFuncs, (req, res) => {
+  return res.status(200).send(res.locals);
+})
+
+app.get('/api/metrics/execution_count/:projectId', metricsController.executionCount, (req, res) => {
   return res.status(200).send(res.locals);
 });
 
-app.get('/metrics/:projectId', metricsController.getFuncs, metricsController.executionCount, metricsController.executionTimes, metricsController.userMemoryBytes, (req, res) => {
+app.get('/api/metrics/execution_times/:projectId', metricsController.executionTimes, (req, res) => {
   return res.status(200).send(res.locals);
-})
+});
+
+app.get('/api/metrics/user_memory_bytes/:projectId', metricsController.userMemoryBytes, (req, res) => {
+  return res.status(200).send(res.locals);
+});
 
 // routers
 app.use('/auth', require('./routers/authRouter'));

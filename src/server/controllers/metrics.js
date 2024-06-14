@@ -89,7 +89,7 @@ const metricsController = {
       interval: {
         startTime: {
           // how far back in minutes the results go
-          seconds: Date.now() / 1000 - 60 * 1440
+          seconds: Date.now() / 1000 - 60 * 43200
         },
         endTime: {
           seconds: Date.now() / 1000
