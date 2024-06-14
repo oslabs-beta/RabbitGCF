@@ -108,6 +108,38 @@ const metricsController = {
     }
   },
 
+  networkEgress: async (req, res, next) => {
+    // const { funcNames } = res.locals;
+    // console.log(`funcNames: ${funcNames}`);
+    const { projectId } = req.params;
+    // console.log(`projectId: ${projectId}`);
+
+    const network_egress = `metric.type="cloudfunctions.googleapis.com/function/network_egress" AND resource.labels.project_id="${projectId}"`;
+    const request = {
+      name: monClient.projectPath(projectId),
+      filter: network_egress,
+      interval: {
+        startTime: {
+          // how far back in minutes the results go
+          seconds: Date.now() / 1000 - 60 * 1440
+        },
+        endTime: {
+          seconds: Date.now() / 1000
+        }
+      }
+    };
+
+    try {
+      const [ timeSeries ] = await monClient.listTimeSeries(request);
+      // console.log(timeSeries);
+      res.locals.network_egress = timeSeries;
+
+      return next();
+    } catch (err) {
+      return next(`Could not get network egress data. ERROR: ${err}`);
+    }
+  },
+
   userMemoryBytes: async (req, res, next) => {
     // const { funcNames } = res.locals;
     // console.log(`funcNames: ${funcNames}`);
