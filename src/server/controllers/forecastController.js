@@ -285,6 +285,7 @@ const forecastController = {
 
         forecastDataSeries.push({
           invocationCost,
+          totalCost: invocationCost,
           invocations,
         });
       };
@@ -300,8 +301,10 @@ const forecastController = {
       for (let i = 0; i < forecastDataSeries.length; i++) {
         const totalGbRAM = forecastDataSeries[i].invocations * cpuGbSecond;
         const netRAMUsageGb = Math.max(0, totalGbRAM - freeGbRAM);
+        const cpuRAMCost = netRAMUsageGb * unitPriceRAM;
 
-        forecastDataSeries[i].cpuRAMCost = netRAMUsageGb * unitPriceRAM;
+        forecastDataSeries[i].cpuRAMCost = cpuRAMCost;
+        forecastDataSeries[i].totalCost += cpuRAMCost;
       }
     }
 
@@ -333,6 +336,12 @@ const forecastController = {
 
         forecastDataSeries[i].networkBandwidthCost = netNetworkBandwithGb * unitPriceBandwidthGb;
         console.log(forecastDataSeries[i]);
+      }
+    }
+
+    const calcTotalCost = () => {
+      for (let i = 0; i < forecastDataSeries.length; i++) {
+        forecastDataSeries[i].totalCost = forecastDataSeries[i].invocationCost + forecastDataSeries[i].cpuRAMCost + forecastDataSeries[i].cpuGHzCost + forecastDataSeries
       }
     }
 
