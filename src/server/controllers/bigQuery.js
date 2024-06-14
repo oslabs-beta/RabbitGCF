@@ -1,4 +1,5 @@
 const { BigQuery } = require('@google-cloud/bigquery');
+const { Logging } = require('@google-cloud/logging');
 
 // this project id for testing purposes
 // const projectId = 'refined-engine-424416-p7';
@@ -83,6 +84,37 @@ const bigQuery = {
       return next({ err: `Something went wrong. ${err}` });
     }
   }
+}
+
+async function quickstart(
+  projectId = 'YOUR_PROJECT_ID', // Your Google Cloud Platform project ID
+  logName = 'my-log' // The name of the log to write to
+) {
+  // Creates a client
+  const logging = new Logging({projectId});
+
+  // Selects the log to write to
+  const log = logging.log(logName);
+
+  // The data to write to the log
+  const text = 'Hello, world!';
+
+  // The metadata associated with the entry
+  const metadata = {
+    resource: {type: 'global'},
+    // See: https://cloud.google.com/logging/docs/reference/v2/rest/v2/LogEntry#logseverity
+    severity: 'INFO',
+  };
+
+  // Prepares a log entry
+  const entry = log.entry(metadata, text);
+
+  async function writeLog() {
+    // Writes the log entry
+    await log.write(entry);
+    console.log(`Logged: ${text}`);
+  }
+  writeLog();
 }
 
 module.exports = bigQuery;
