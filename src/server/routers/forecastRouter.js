@@ -7,7 +7,8 @@ const metricsController = require('../controllers/metrics.js');
 
 const router = express.Router();
 
-router.get('/', (req, res, next) => {
+router.post('/', (req, res, next) => {
+  console.log(req.body);
   console.log('forecast router invoked', new Date());
   return next();
   },

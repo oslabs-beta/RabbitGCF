@@ -92,7 +92,7 @@ const forecastController = {
       region: 'us-central1',
       generation: '1',
       type: 'Memory: 4096MB / CPU: 4.8GHz',
-      invocationIncrements: 500000,
+      invocationIncrements: 200000,
       maxIncrement: 12,
     };
     

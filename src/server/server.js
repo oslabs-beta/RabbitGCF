@@ -3,6 +3,7 @@ const passport = require('passport');
 const session  = require('express-session');
 const path = require('path');
 const dotenv = require('dotenv');
+const bodyParser = require('body-parser');
 
 dotenv.config({ path: './.env' });
 const PORT = 3000;
