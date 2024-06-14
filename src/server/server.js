@@ -50,8 +50,9 @@ app.get('/api/metrics/user_memory_bytes/:projectId', metricsController.userMemor
 });
 
 // routers
-app.use('/auth', require('./routers/authRouter'));
-app.use('/user', require('./routers/userRouter'));
+app.use('/api/auth', require('./routers/authRouter'));
+app.use('/api/user', require('./routers/userRouter'));
+app.use('/api/forecast', require('./routers/forecastRouter'));
 
 // catch-all route handler
 app.use('*', (req, res) => {

@@ -7,7 +7,16 @@ const metricsController = require('../controllers/metrics.js');
 
 const router = express.Router();
 
-router.get('/api/forecast', forecastController);
+router.get('/', (req, res, next) => {
+  console.log('forecast router invoked', new Date());
+  return next();
+  },
+  /*retrieve metrics from metric middleware here*/
+  forecastController.calcHistorical, 
+  forecastController.forecast, 
+  (req, res) => {
+    res.status(200).json(res.locals.forecastDataSeries);
+  });
 
 
 
