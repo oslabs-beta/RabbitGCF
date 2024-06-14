@@ -13,9 +13,11 @@ const ForcastPage = () => {
   const forecast = () => {
     console.log('forecast button clicked');
     const forecastArgs = {
+      projectId: 'retrieve from State - placeholder',
+      functionName: document.getElementById('functionNameInput').value,
       type: document.getElementById('typeInput').value,
       region: document.getElementById('regionInput').value,
-      generat: document.getElementById('generationInput').value,
+      generation: document.getElementById('generationInput').value,
       increments: Number(document.getElementById('incrementsInput').value),
       maxIncrements: Number(document.getElementById('maxIncrementsInput').value),
     }
@@ -41,6 +43,14 @@ const ForcastPage = () => {
         <DrawerHeader />
         <h1>Forecast Page</h1>
         <div>
+          <div>
+            <label for='functionName'>Function: </label>
+            <select name="functionName" id="functionNameInput">
+              <option value="placeholder">getCharacter - placeholder</option>
+              <option >addCharacter - placeholder</option>
+              <option >deleteCharacter - placeholder</option>
+            </select>
+          </div>
           <div>
             <label for='type'>Type: </label>
             <select name="type" id="typeInput">
@@ -104,9 +114,9 @@ const ForcastPage = () => {
           </div>
           <div>
             <label for='increments'>Invocation Increments: </label>
-            <input type='number' id='incrementsInput' name='increments' />
+            <input type='number' id='incrementsInput' name='increments' defaultValue={500000}/>
             <label for='maxIncrements'>Max Increments: </label>
-            <input type='number' id='maxIncrementsInput' name='maxIncrements' />
+            <input type='number' id='maxIncrementsInput' name='maxIncrements' defaultValue={12}/>
           </div>
           <button onClick={forecast}>Generate</button>
         </div>

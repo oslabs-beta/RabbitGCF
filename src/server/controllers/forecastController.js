@@ -86,20 +86,21 @@ const forecastController = {
 
   forecast (req, res, next){
     // REFACTOR: Need to handle minimum number of instances pricing
-    // const { region, generation, type } = req.body;
+    const { region, generation, type, increments, maxIncrements } = req.body.forecastArgs;
     // ------ Test data -----
-    const testArguments = {
-      region: 'us-central1',
-      generation: '1',
-      type: 'Memory: 4096MB / CPU: 4.8GHz',
-      invocationIncrements: 200000,
-      maxIncrement: 12,
-    };
+    // const testArguments = {
+    //   region: 'us-central1',
+    //   generation: '1',
+    //   type: 'Memory: 4096MB / CPU: 4.8GHz',
+    //   invocationIncrements: 200000,
+    //   maxIncrement: 12,
+    // };
+    // -----------------------
     
     // Retrieve gfc configurations
-    const tier = gcfPricingStructure.gcfRegionTiers[testArguments.region][testArguments.generation];
-    const memoryConfig = gcfPricingStructure.gfcTypes[testArguments.type].mb;
-    const cpuMHzConfig = gcfPricingStructure.gfcTypes[testArguments.type].mhz;
+    const tier = gcfPricingStructure.gcfRegionTiers[region][generation];
+    const memoryConfig = gcfPricingStructure.gfcTypes[type].mb;
+    const cpuMHzConfig = gcfPricingStructure.gfcTypes[type].mhz;
 
     // Create output array
     const forecastDataSeries = [];
@@ -132,7 +133,7 @@ const forecastController = {
         const totalGbRAM = forecastDataSeries[i].invocations * cpuGbSecond;
         const netRAMUsageGb = Math.max(0, totalGbRAM - freeGbRAM);
         const cpuRAMCost = netRAMUsageGb * unitPriceRAM;
-
+        
         forecastDataSeries[i].cpuRAMCost = cpuRAMCost;
         forecastDataSeries[i].totalCost += cpuRAMCost;
       }
@@ -171,7 +172,7 @@ const forecastController = {
       }
     }
 
-    calcInvocationCosts(testArguments.invocationIncrements, testArguments.maxIncrement);
+    calcInvocationCosts(increments, maxIncrements);
     calcComputeRAMCost(memoryConfig, res.locals.avgExecTimeMS);
     calcComputeGHzCost(cpuMHzConfig, res.locals.avgExecTimeMS);
     calcNetworkBandwithCost(res.locals.avgMemoryKB);
