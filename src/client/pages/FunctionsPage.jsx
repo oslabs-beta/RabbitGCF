@@ -3,24 +3,23 @@ import NavBar from '../components/NavBar.jsx';
 import Box from '@mui/material/Box';
 import DrawerHeader from '../components/DrawerHeader.jsx';
 import Typography from '@mui/material/Typography';
+import FunctionTable from '../components/FunctionTable.jsx';
 
-const ForcastPage = () => {
+const FunctionsPage = () => {
 
   return(
     <div>
       <NavBar />
       <Box component="main" sx={{ flexGrow: 1, p: '0px 0px 0px 80px'}}>
         <DrawerHeader />
-        <h1>Forecast Page</h1>
+        <h1>Functions Page</h1>
         <Typography paragraph>
-          This is your forecast
+          Table:
         </Typography>
-        <Box sx={{bgcolor: 'skyblue', width: 800, height: 400}}>
-
-        </Box>
+        <FunctionTable />
       </Box>
     </div>
   );
 };
 
-export default ForcastPage;
+export default FunctionsPage;
