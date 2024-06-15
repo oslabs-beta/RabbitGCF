@@ -4,6 +4,10 @@ module.exports = {
     { timestamp: '2024-06-01T01:00:00Z', runtime: 150, status: 'ok' },
     { timestamp: '2024-06-01T02:00:00Z', runtime: 130, status: 'ok' },
     { timestamp: '2024-06-01T03:00:00Z', runtime: 160, status: 'error' },
+    { timestamp: '2024-06-01T04:00:00Z', runtime: 120, status: 'ok' },
+    { timestamp: '2024-06-01T05:00:00Z', runtime: 150, status: 'ok' },
+    { timestamp: '2024-06-01T06:00:00Z', runtime: 130, status: 'ok' },
+    { timestamp: '2024-06-01T07:00:00Z', runtime: 160, status: 'error' },
   ],
   
     memoryData: [

@@ -14,47 +14,48 @@
 //   ReferenceArea
 // } from "recharts";
 
-// we will want a function that converts real data
-// into an array of objects
-// 1 data point = 1 object
-// we should have a data state hook outside of this func
-// data, setData
-// we also should have variables set to data.time, data.memory, data.runtime
-// inside func, an empty array
-// loop through our data
-// push into our array data.time[i] & data.memory[i] & data.runtime[i]
-// set our state data 
+// // we will want a function that converts real data
+// // into an array of objects
+// // 1 data point = 1 object
+// // we should have a data state hook outside of this func
+// // data, setData
+// // we also should have variables set to data.time, data.memory, data.runtime
+// // inside func, an empty array
+// // loop through our data
+// // push into our array data.time[i] & data.memory[i] & data.runtime[i]
+// // set our state data 
 
-// const initialData = [
-//   { name: 1, cost: 4.11, impression: 100 },
-//   { name: 2, cost: 2.39, impression: 120 },
-//   { name: 3, cost: 1.37, impression: 150 },
-//   { name: 4, cost: 1.16, impression: 180 },
-//   { name: 5, cost: 2.29, impression: 200 },
-//   { name: 6, cost: 3, impression: 499 },
-//   { name: 7, cost: 0.53, impression: 50 },
-//   { name: 8, cost: 2.52, impression: 100 },
-//   { name: 9, cost: 1.79, impression: 200 },
-//   { name: 10, cost: 2.94, impression: 222 },
-//   { name: 11, cost: 4.3, impression: 210 },
-//   { name: 12, cost: 4.41, impression: 300 },
-//   { name: 13, cost: 2.1, impression: 50 },
-//   { name: 14, cost: 8, impression: 190 },
-//   { name: 15, cost: 0, impression: 300 },
-//   { name: 16, cost: 9, impression: 400 },
-//   { name: 17, cost: 3, impression: 200 },
-//   { name: 18, cost: 2, impression: 50 },
-//   { name: 19, cost: 3, impression: 100 },
-//   { name: 20, cost: 7, impression: 100 }
-// ];
+// // const initialData = [
+// //   { name: 1, cost: 4.11, impression: 100 },
+// //   { name: 2, cost: 2.39, impression: 120 },
+// //   { name: 3, cost: 1.37, impression: 150 },
+// //   { name: 4, cost: 1.16, impression: 180 },
+// //   { name: 5, cost: 2.29, impression: 200 },
+// //   { name: 6, cost: 3, impression: 499 },
+// //   { name: 7, cost: 0.53, impression: 50 },
+// //   { name: 8, cost: 2.52, impression: 100 },
+// //   { name: 9, cost: 1.79, impression: 200 },
+// //   { name: 10, cost: 2.94, impression: 222 },
+// //   { name: 11, cost: 4.3, impression: 210 },
+// //   { name: 12, cost: 4.41, impression: 300 },
+// //   { name: 13, cost: 2.1, impression: 50 },
+// //   { name: 14, cost: 8, impression: 190 },
+// //   { name: 15, cost: 0, impression: 300 },
+// //   { name: 16, cost: 9, impression: 400 },
+// //   { name: 17, cost: 3, impression: 200 },
+// //   { name: 18, cost: 2, impression: 50 },
+// //   { name: 19, cost: 3, impression: 100 },
+// //   { name: 20, cost: 7, impression: 100 }
+// // ];
 
 // const getAxisYDomain = (
 //   from,
 //   to,
 //   ref,
-//   offset
+//   offset,
+//   data
 // ) => {
-//   const refData = initialData.slice(from - 1, to);
+//   const refData = data.slice(from - 1, to);
 //   let [bottom, top] = [refData[0][ref], refData[0][ref]];
 
 //   refData.forEach((d) => {
@@ -66,7 +67,7 @@
 // };
 
 // const initialState = {
-//   data: initialData,
+//   data: data,
 //   left: "dataMin",
 //   right: "dataMax",
 //   refAreaLeft: "",
@@ -78,7 +79,7 @@
 //   animation: true
 // };
 
-// export default class ZoomGraph extends Component {
+// export default class GraphComponent extends Component {
 //   constructor(props) {
 //     super(props);
 //     this.state = initialState;
@@ -226,58 +227,7 @@
 //   }
 // }
 
-// import React from 'react';
-// import {
-//   LineChart,
-//   Line,
-//   XAxis,
-//   YAxis,
-//   CartesianGrid,
-//   Tooltip,
-//   Legend,
-//   ResponsiveContainer,
-//   Brush,
-//   ReferenceLine
-// } from 'recharts';
 
-// const GraphComponent = ({ data, dataKey, statusKey, label }) => {
-//   return (
-//     <ResponsiveContainer width="100%" height={400}>
-//       <LineChart
-//         width={500}
-//         height={300}
-//         data={data}
-//         margin={{
-//           top: 5,
-//           right: 30,
-//           left: 20,
-//           bottom: 5
-//         }}
-//       >
-//         <CartesianGrid strokeDasharray="3 3" />
-//         <XAxis dataKey="timestamp" />
-//         <YAxis />
-//         <Tooltip />
-//         <Legend />
-//         <Line
-//           type="monotone"
-//           dataKey={dataKey}
-//           name={label}
-//           stroke="#8884d8"
-//           dot={(dataPoint) =>
-//             dataPoint[statusKey] === 'error'
-//               ? { r: 5, fill: 'red' }
-//               : false
-//           }
-//         />
-//         <Brush />
-//         <ReferenceLine y={0} stroke="#000" />
-//       </LineChart>
-//     </ResponsiveContainer>
-//   );
-// };
-
-// export default GraphComponent;
 import "../css/dummyGraph.css";
 import React, { useState } from "react";
 import {
@@ -295,7 +245,7 @@ import {
 } from "recharts";
 
 const getAxisYDomain = (data, from, to, key, offset) => {
-  const refData = data.slice(from, to + 1);
+  const refData = data.slice(from -1, to);
   let [bottom, top] = [refData[0][key], refData[0][key]];
 
   refData.forEach(d => {
@@ -314,6 +264,9 @@ const GraphComponent = ({ data, dataKey, statusKey, label }) => {
     right: "dataMax",
     top: "dataMax+1",
     bottom: "dataMin-1",
+    top2: "dataMax+20", // added
+    bottom2: "dataMin-20", // added
+    animation: true // added
   });
 
   const { refAreaLeft, refAreaRight, left, right, top, bottom } = zoomState;
@@ -341,7 +294,7 @@ const GraphComponent = ({ data, dataKey, statusKey, label }) => {
       return;
     }
 
-    // Get new Y-axis domain
+  //   // Get new Y-axis domain
     const [newBottom, newTop] = getAxisYDomain(data, newLeftIndex, newRightIndex, dataKey, 1);
 
     setZoomState({
@@ -353,6 +306,42 @@ const GraphComponent = ({ data, dataKey, statusKey, label }) => {
       bottom: newBottom,
     });
   };
+//   let { refAreaLeft, refAreaRight } = this.zoomState;
+//   const { data } = this.zoomState;
+
+//   if (refAreaLeft === refAreaRight || refAreaRight === "") {
+//     this.setZoomState(() => ({
+//       refAreaLeft: "",
+//       refAreaRight: ""
+//     }));
+//     return;
+//   }
+
+//   // xAxis domain
+//   if (refAreaLeft > refAreaRight)
+//     [refAreaLeft, refAreaRight] = [refAreaRight, refAreaLeft];
+
+//   // yAxis domain
+//   const [bottom, top] = getAxisYDomain(refAreaLeft, refAreaRight, "cost", 1);
+//   const [bottom2, top2] = getAxisYDomain(
+//     refAreaLeft,
+//     refAreaRight,
+//     "impression",
+//     50
+//   );
+
+//   this.setZoomState(() => ({
+//     refAreaLeft: "",
+//     refAreaRight: "",
+//     data: data.slice(),
+//     left: refAreaLeft,
+//     right: refAreaRight,
+//     bottom,
+//     top,
+//     bottom2,
+//     top2
+//   }));
+// }
 
   const zoomOut = () => {
     setZoomState({
@@ -415,6 +404,5 @@ const GraphComponent = ({ data, dataKey, statusKey, label }) => {
 };
 
 export default GraphComponent;
-
 
 
