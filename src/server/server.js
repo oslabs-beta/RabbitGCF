@@ -44,6 +44,10 @@ app.get('/api/metrics/execution_times/:projectId', metricsController.executionTi
   return res.status(200).send(res.locals);
 });
 
+app.get('api/metrics/network_egress/:projectId', metricsController.networkEgress, (req, res) => {
+  return res.status(200).send(res.locals);
+})
+
 app.get('/api/metrics/user_memory_bytes/:projectId', metricsController.userMemoryBytes, (req, res) => {
   return res.status(200).send(res.locals);
 });
