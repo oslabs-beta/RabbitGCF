@@ -11,23 +11,22 @@ const app = express();
 
 const metricsController = require('./controllers/metrics');
 const graphController = require('./controllers/graphController');
-const authController = require('./controllers/authController');
+// const authController = require('./controllers/authController');
 const bigQuery = require('./controllers/bigQuery');
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, './../client')));
 
-app.use('/api', apiRouter);
 
-app.use(session({ 
-  secret: process.env.SESSION_SECRET,
-  resave: true,
-  saveUninitialized: true
-}));
+// app.use(session({ 
+  //   secret: process.env.SESSION_SECRET,
+  //   resave: true,
+//   saveUninitialized: true
+// }));
 
-// Initialize passport and sessions
-app.use(passport.initialize());
-app.use(passport.session());
+// // Initialize passport and sessions
+// app.use(passport.initialize());
+// app.use(passport.session());
 
 // app.post('/bigquery/datasets/:projectId', bigQuery.getDatasets, (req, res) => {
 //   return res.status(200).send(res.locals);
@@ -50,8 +49,9 @@ app.get('/api/metrics/user_memory_bytes/:projectId', metricsController.userMemor
 });
 
 // routers
-app.use('/auth', require('./routers/authRouter'));
-app.use('/user', require('./routers/userRouter'));
+// app.use('/auth', require('./routers/authRouter'));
+// app.use('/user', require('./routers/userRouter'));
+app.use('/api', apiRouter);
 
 // catch-all route handler
 app.use('*', (req, res) => {
