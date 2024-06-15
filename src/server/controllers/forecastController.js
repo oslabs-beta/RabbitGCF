@@ -57,7 +57,7 @@ const forecastController = {
    */
   calcHistorical (req, res, next){
     console.log('calcHistorical middleware invoked =========');
-    // fetch function metrics for the last 30 invocations
+    // fetch function metrics for the last 30 invocations to get average runtime and memory usage
     try {
       /**
        * fetch(metrics API)
@@ -110,9 +110,9 @@ const forecastController = {
       const costPerInvocation = 0.40 / 1000000; // Google's cost per million invocation
       
       for (let i = 0; i <= maxIncrement; i++) {
-        const invocations = increments * i;
-        const netInvocations = Math.max(0, invocations - freeInvocations);
-        const invocationCost = netInvocations * costPerInvocation;
+        const invocations = increments * i; // calc invocations based on arguments
+        const netInvocations = Math.max(0, invocations - freeInvocations); // less than free invocations provided
+        const invocationCost = netInvocations * costPerInvocation; // calc invocations * unit price
 
         forecastDataSeries.push({
           invocationCost,
@@ -127,12 +127,12 @@ const forecastController = {
       const unitPriceRAM = gcfPricingStructure.gcfComputePricing[tier].memoryGbPrice; // price based on tier
 
       const gcfGbMemoryConfigGb = gcfMemoryConfigMb / 1024; // conversion from MB to GB
-      const cpuGbSecond = gcfGbMemoryConfigGb * gcfHistoricalRunTime;
+      const cpuGbSecond = gcfGbMemoryConfigGb * gcfHistoricalRunTime; // calc GB-seconds based on gcf type
 
       for (let i = 0; i < forecastDataSeries.length; i++) {
-        const totalGbRAM = forecastDataSeries[i].invocations * cpuGbSecond;
-        const netRAMUsageGb = Math.max(0, totalGbRAM - freeGbRAM);
-        const cpuRAMCost = netRAMUsageGb * unitPriceRAM;
+        const totalGbRAM = forecastDataSeries[i].invocations * cpuGbSecond; // calc total GB-ram usage based on invocations
+        const netRAMUsageGb = Math.max(0, totalGbRAM - freeGbRAM); // less any free RAM provided
+        const cpuRAMCost = netRAMUsageGb * unitPriceRAM; // calc ram used * unit price
         
         forecastDataSeries[i].cpuRAMCost = cpuRAMCost;
         forecastDataSeries[i].totalCost += cpuRAMCost;
@@ -144,12 +144,12 @@ const forecastController = {
       const unitPriceGHz = gcfPricingStructure.gcfComputePricing[tier].cpuGHzPrice; // price based on tier
 
       const gcfGHzConfig = gcfMHzConfig / 1000; // conversion from MHz to GHz
-      const cpuGHzSecond = gcfGHzConfig * gcfHistoricalRunTime;
+      const cpuGHzSecond = gcfGHzConfig * gcfHistoricalRunTime; // calc GHz-second based on config
 
       for (let i = 0; i < forecastDataSeries.length; i++) {
-        const totalGHz = forecastDataSeries[i].invocations * cpuGHzSecond;
-        const netGHzUsage = Math.max(0, totalGHz - freeGHz);
-        const cpuGHzCost = netGHzUsage * unitPriceGHz;
+        const totalGHz = forecastDataSeries[i].invocations * cpuGHzSecond; // calc total GHz cost based on invocations
+        const netGHzUsage = Math.max(0, totalGHz - freeGHz); // less free GHz provided
+        const cpuGHzCost = netGHzUsage * unitPriceGHz; // calc GHz used * unit price
 
         forecastDataSeries[i].cpuGHzCost = cpuGHzCost;
         forecastDataSeries[i].totalCost += cpuGHzCost;
@@ -163,9 +163,9 @@ const forecastController = {
       const gcfBandwidthGb = gcfHistoricalBandwidthKb / 1048576; // conversion from KB to GB per invocation
 
       for (let i = 0; i < forecastDataSeries.length; i++) {
-        const totalNetworkBandwidthGb = forecastDataSeries[i].invocations * gcfBandwidthGb;
-        const netNetworkBandwithGb = Math.max(0, totalNetworkBandwidthGb - freeBandwidthGb);
-        const networkBandwidthCost =  netNetworkBandwithGb * unitPriceBandwidthGb;
+        const totalNetworkBandwidthGb = forecastDataSeries[i].invocations * gcfBandwidthGb; // calc total network bandwidth cost
+        const netNetworkBandwithGb = Math.max(0, totalNetworkBandwidthGb - freeBandwidthGb); // less any free network bandwidth provided
+        const networkBandwidthCost =  netNetworkBandwithGb * unitPriceBandwidthGb; // calc networkbandwidth used * unit price
 
         forecastDataSeries[i].networkBandwidthCost = networkBandwidthCost;
         forecastDataSeries[i].totalCost += networkBandwidthCost;
