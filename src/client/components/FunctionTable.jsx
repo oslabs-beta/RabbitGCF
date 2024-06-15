@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -8,6 +8,7 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import Button from '@mui/material/Button';
+import Skeleton from '@mui/material/Skeleton';
 
 const columns = [
   { id: 'function', label: 'Function', minWidth: 170 },
@@ -20,6 +21,7 @@ const rows = [];
 export default function FunctionTable() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [loaded, setLoaded] = useState(false);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -30,30 +32,34 @@ export default function FunctionTable() {
     setPage(0);
   };
 
-  const projectId = 0;
+  const projectId = 'refined-engine-424416-p7';
 
   const getFunctionList = async () => {
     try {
       const response = await fetch(`/api/metrics/funcs/${projectId}`, {
-        method: GET,
+        method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       });
       const data = await response.json();
-      data.forEach(el => {
+      console.log(data);
+      data['funcNames'].forEach(el => {
         rows.push(el) // update this for data shape
-      })
+      });
+      setLoaded(true);
     } catch (error) {
       console.log('Error in getFunctionList: ', error);
     }
   }
 
-  getFunctionList();
+  useEffect(() => {
+    getFunctionList()
+  }, [])
 
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-      <TableContainer sx={{ maxHeight: 440 }}>
+      <TableContainer sx={{ maxHeight: '80vh' }}>
         <Table stickyHeader aria-label="sticky table">
-          <TableHead>
+          <TableHead >
             <TableRow>
               {columns.map((column) => (
                 <TableCell
@@ -67,11 +73,12 @@ export default function FunctionTable() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows
+            { loaded ?
+            rows
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row) => {
                 return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.function}>
+                  <TableRow hover role="checkbox" tabIndex={-1} key={row}>
                     <TableCell>
                       {row}
                     </TableCell>
@@ -82,8 +89,10 @@ export default function FunctionTable() {
                       <Button variant='outlined'>{row} Forcast</Button>
                     </TableCell>
                   </TableRow>
-                );
-              })}
+                ); 
+              }) : 
+              null
+            }
           </TableBody>
         </Table>
       </TableContainer>
