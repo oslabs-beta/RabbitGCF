@@ -50,7 +50,7 @@ const AccountMenu = () => {
         <Divider />
         <MenuItem onClick={logoutClick}>
           <LogoutIcon />
-          Log out
+          Log out (WIP)
         </MenuItem> 
       </Menu>
     </div>
