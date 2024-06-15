@@ -57,7 +57,7 @@ const metricsController = {
       interval: {
         startTime: {
           // how far back in minutes the results go
-          seconds: Date.now() / 1000 - 60 * 1440
+          seconds: Date.now() / 1000 - 60 * 43200
         },
         endTime: {
           seconds: Date.now() / 1000
@@ -68,7 +68,29 @@ const metricsController = {
     try {
       const [ timeSeries ] = await monClient.listTimeSeries(request);
       // console.log(timeSeries);
-      res.locals.execution_count = timeSeries;
+      const parsedTimeSeries = timeSeries.map(obj => {
+        // console.log(obj.metric.labels.status);
+        if (obj.metric.labels.status === 'ok') {
+          const newObj = {};
+          const newPoints = [];
+          
+          obj.points.forEach(point => {
+            const time = new Date(point.interval.startTime.seconds * 1000);
+            newPoints.push({
+              timestamp: time,
+              value: point.value.int64Value
+            });
+          });
+          
+          newObj.points = newPoints;
+          newObj.name = obj.resource.labels.function_name;
+
+          return newObj;
+        };
+      });
+      // console.log(`parsed timeSeries: ${parsedTimeSeries}`);
+
+      res.locals.execution_count = parsedTimeSeries;
 
       return next();
     } catch (err) {
@@ -108,6 +130,38 @@ const metricsController = {
     }
   },
 
+  networkEgress: async (req, res, next) => {
+    // const { funcNames } = res.locals;
+    // console.log(`funcNames: ${funcNames}`);
+    const { projectId } = req.params;
+    // console.log(`projectId: ${projectId}`);
+
+    const network_egress = `metric.type="cloudfunctions.googleapis.com/function/network_egress" AND resource.labels.project_id="${projectId}"`;
+    const request = {
+      name: monClient.projectPath(projectId),
+      filter: network_egress,
+      interval: {
+        startTime: {
+          // how far back in minutes the results go
+          seconds: Date.now() / 1000 - 60 * 43200
+        },
+        endTime: {
+          seconds: Date.now() / 1000
+        }
+      }
+    };
+
+    try {
+      const [ timeSeries ] = await monClient.listTimeSeries(request);
+      // console.log(timeSeries);
+      res.locals.network_egress = timeSeries;
+
+      return next();
+    } catch (err) {
+      return next(`Could not get network egress data. ERROR: ${err}`);
+    }
+  },
+
   userMemoryBytes: async (req, res, next) => {
     // const { funcNames } = res.locals;
     // console.log(`funcNames: ${funcNames}`);
@@ -121,7 +175,7 @@ const metricsController = {
       interval: {
         startTime: {
           // how far back in minutes the results go
-          seconds: Date.now() / 1000 - 60 * 1440
+          seconds: Date.now() / 1000 - 60 * 43200
         },
         endTime: {
           seconds: Date.now() / 1000
