@@ -3,6 +3,7 @@ const passport = require('passport');
 const session  = require('express-session');
 const path = require('path');
 const dotenv = require('dotenv');
+const apiRouter = require('./routes/apiRouter');
 
 dotenv.config({ path: './.env' });
 const PORT = 3000;
@@ -15,6 +16,8 @@ const bigQuery = require('./controllers/bigQuery');
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, './../client')));
+
+app.use('/api', apiRouter);
 
 app.use(session({ 
   secret: process.env.SESSION_SECRET,
@@ -31,19 +34,19 @@ app.use(passport.session());
 // });
 
 app.get('/api/metrics/funcs/:projectId', metricsController.getFuncs, (req, res) => {
-  return res.status(200).send(res.locals.funcNames);
+  return res.status(200).send(res.locals);
 })
 
 app.get('/api/metrics/execution_count/:projectId', metricsController.executionCount, (req, res) => {
-  return res.status(200).send(res.locals.execution_count);
+  return res.status(200).send(res.locals);
 });
 
 app.get('/api/metrics/execution_times/:projectId', metricsController.executionTimes, (req, res) => {
-  return res.status(200).send(res.locals.execution_times);
+  return res.status(200).send(res.locals);
 });
 
 app.get('/api/metrics/user_memory_bytes/:projectId', metricsController.userMemoryBytes, (req, res) => {
-  return res.status(200).send(res.locals.user_memory_bytes);
+  return res.status(200).send(res.locals);
 });
 
 // routers
