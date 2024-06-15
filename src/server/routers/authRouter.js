@@ -11,7 +11,7 @@ const cookieController = require('../controllers/cookieController');
 const router = express.Router();
 
 // Google OAuth, step 1: Redirect to Google OAuth consent screen
-router.get('/google', passport.authenticate('google', {scope: ['email', 'profile']}));
+router.get('/api/google', passport.authenticate('google', {scope: ['email', 'profile']}));
 
 // Google OAuth, step 2: Google OAuth consent screen redirects to this route
 router.get('/google/callback',
@@ -21,12 +21,12 @@ router.get('/google/callback',
 }));
 
 // Google OAuth failure route
-router.get('/google/failure', (req, res) => {
+router.get('/api/google/failure', (req, res) => {
   res.status(401).redirect('/');
 });
 
 // Google OAuth, step 3: Set cookies for JWT
-router.get('/set', (req, res, next) => {
+router.get('/api/set', (req, res, next) => {
   // console.log(Object.keys(req.user));
   // console.log(req.user._id);
   next();
