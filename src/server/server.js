@@ -5,7 +5,7 @@ const path = require('path');
 const dotenv = require('dotenv');
 const apiRouter = require('./routes/apiRouter');
 
-// dotenv.config({ path: './.env' });
+dotenv.config({ path: './.env' });
 const PORT = 3000;
 const app = express();
 
@@ -25,13 +25,13 @@ app.use(session({
   saveUninitialized: true
 }));
 
-Initialize passport and sessions
+// Initialize passport and sessions
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.post('/bigquery/datasets/:projectId', bigQuery.getDatasets, (req, res) => {
-  return res.status(200).send(res.locals);
-});
+// app.post('/bigquery/datasets/:projectId', bigQuery.getDatasets, (req, res) => {
+//   return res.status(200).send(res.locals);
+// });
 
 app.get('/api/metrics/funcs/:projectId', metricsController.getFuncs, (req, res) => {
   return res.status(200).send(res.locals);
