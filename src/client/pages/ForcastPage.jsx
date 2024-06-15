@@ -11,9 +11,9 @@ const ForcastPage = () => {
       <NavBar />
       <Box component="main" sx={{ flexGrow: 1, p: '0px 0px 0px 80px'}}>
         <DrawerHeader />
-        <h1>Forcast Page</h1>
+        <h1>Forecast Page</h1>
         <Typography paragraph>
-          This is your forcast
+          This is your forecast
         </Typography>
         <Box sx={{bgcolor: 'skyblue', width: 800, height: 400}}>
 

@@ -3,6 +3,7 @@ const passport = require('passport');
 const session  = require('express-session');
 const path = require('path');
 const dotenv = require('dotenv');
+const apiRouter = require('./routes/apiRouter');
 
 dotenv.config({ path: './.env' });
 const PORT = 3000;
@@ -16,9 +17,8 @@ const bigQuery = require('./controllers/bigQuery');
 app.use(express.json());
 app.use(express.static(path.join(__dirname, './../client')));
 
-// app.get('/*', (req, res) => {
-//   return res.status(200).sendFile(path.join(__dirname, './../client/index.html'));
-// })
+app.use('/api', apiRouter);
+
 app.use(session({ 
   secret: process.env.SESSION_SECRET,
   resave: true,
