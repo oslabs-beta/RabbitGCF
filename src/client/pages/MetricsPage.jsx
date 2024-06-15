@@ -3,6 +3,8 @@ import NavBar from '../components/NavBar.jsx';
 import Box from '@mui/material/Box';
 import DrawerHeader from '../components/DrawerHeader.jsx';
 import Typography from '@mui/material/Typography';
+import DummyGraph from '../components/DummyGraph.jsx';
+import ZoomGraph from '../components/ZoomGraph.jsx';
 
 const MetricsPage = () => {
 
@@ -17,34 +19,36 @@ const MetricsPage = () => {
         </Typography>
         {/* <div className='metrics-container'> */}
         <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr'}}>
-          <div style={{marginBottom: '20px'}}>
+          <div style={{marginBottom: '40px'}}>
             <Typography>
               Metric 1:
             </Typography>
-            <Box sx={{bgcolor: 'skyblue', width: 300, height: 300}}>
-              
+            <Box sx={{bgcolor: '#D4F1F4', width: 550, height: 350, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+              <DummyGraph />
             </Box>
           </div>
           <div style={{marginBottom: '20px'}}>
             <Typography>
               Metric 2:
             </Typography>
-            <Box sx={{bgcolor: 'pink', width: 300, height: 300}}>
+            <Box sx={{bgcolor: '#ffe5eb', width: 550, height: 350, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+              <ZoomGraph />
             </Box>
           </div>
           <div style={{marginBottom: '20px'}}>
             <Typography>
               Metric 3:
             </Typography>
-            <Box sx={{bgcolor: 'skyblue', width: 300, height: 300}}>
-
+            <Box sx={{bgcolor: '#D4F1F4', width: 550, height: 350, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+              <DummyGraph />
             </Box>
           </div>
           <div style={{marginBottom: '20px'}}>
             <Typography>
               Metric 4:
             </Typography>
-            <Box sx={{bgcolor: 'pink', width: 300, height: 300}}>
+            <Box sx={{bgcolor: '#ffe5eb', width: 550, height: 350, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+              <DummyGraph />
             </Box>
           </div>
         </div>

@@ -23,7 +23,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import HomeIcon from '@mui/icons-material/Home';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import InsightsIcon from '@mui/icons-material/Insights';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import DataObjectIcon from '@mui/icons-material/DataObject';
 
 const drawerWidth = 240;
 
@@ -111,6 +111,11 @@ export default function NavBar() {
     navigate('/forcast');
   }
 
+  function functionsClick() {
+    console.log('functions clicked')
+    navigate('/functions');
+  }
+
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
@@ -166,6 +171,27 @@ export default function NavBar() {
         </List>
         <Divider />
         <List>
+          <ListItem key={'Functions'} disablePadding sx={{ display: 'block' }}>
+            <ListItemButton
+              onClick={functionsClick}
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? 'initial' : 'center',
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : 'auto',
+                  justifyContent: 'center',
+                }}
+              >
+                <DataObjectIcon />
+              </ListItemIcon>
+              <ListItemText primary={'Metrics'} sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </ListItem>
           <ListItem key={'Metrics'} disablePadding sx={{ display: 'block' }}>
             <ListItemButton
               onClick={metricsClick}
