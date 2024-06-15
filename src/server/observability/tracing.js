@@ -1,1 +1,0 @@
-require('@google-cloud/trace-agent').start();

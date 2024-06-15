@@ -30,18 +30,24 @@ export default function FunctionTable() {
     setPage(0);
   };
 
+  const projectId = 0;
+
   const getFunctionList = async () => {
     try {
-      const response = await fetch('/api/functions', {
+      const response = await fetch(`/api/metrics/funcs/${projectId}`, {
         method: GET,
-
+        headers: { 'Content-Type': 'application/json' },
       });
-
-      
+      const data = await response.json();
+      data.forEach(el => {
+        rows.push(el) // update this for data shape
+      })
     } catch (error) {
       console.log('Error in getFunctionList: ', error);
     }
   }
+
+  getFunctionList();
 
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>

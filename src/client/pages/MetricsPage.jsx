@@ -8,6 +8,8 @@ import ZoomGraph from '../components/ZoomGraph.jsx';
 
 const MetricsPage = () => {
 
+  
+
   return(
     <div>
       <NavBar />
