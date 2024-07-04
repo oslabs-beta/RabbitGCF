@@ -71,7 +71,7 @@ const metricsController = {
       const parsedTimeSeries = timeSeries.map(obj => {
         // console.log(obj.metric.labels.status);
         if (obj.metric.labels.status === 'ok') {
-          const newObj = {};
+          const newSeries = {};
           const newPoints = [];
           
           obj.points.forEach(point => {
@@ -82,10 +82,10 @@ const metricsController = {
             });
           });
           
-          newObj.points = newPoints;
-          newObj.name = obj.resource.labels.function_name;
+          newSeries.points = newPoints;
+          newSeries.name = obj.resource.labels.function_name;
 
-          return newObj;
+          return newSeries;
         };
       });
       // console.log(`parsed timeSeries: ${parsedTimeSeries}`);
@@ -122,43 +122,29 @@ const metricsController = {
     try {
       const [ timeSeries ] = await monClient.listTimeSeries(request);
       // console.log(timeSeries);
-      res.locals.execution_times = timeSeries;
+      const parsedTimeSeries = timeSeries.map(obj => {
+        const newSeries = {};
+        const newPoints = [];
+
+        obj.points.forEach(point => {
+          const time = new Date(point.interval.startTime.seconds * 1000);
+          newPoints.push({
+            timestamp: time,
+            value: point.value.distributionValue.mean / 1000000 // converting from nanoseconds to milliseconds
+          });
+        });
+
+        newSeries.points = newPoints;
+        newSeries.name = obj.resource.labels.function_name;
+
+        return newSeries;
+      });
+
+      res.locals.execution_times = parsedTimeSeries;
 
       return next();
     } catch (err) {
       return next(`Could not get execution times data. ERROR: ${err}`);
-    }
-  },
-
-  networkEgress: async (req, res, next) => {
-    // const { funcNames } = res.locals;
-    // console.log(`funcNames: ${funcNames}`);
-    const { projectId } = req.params;
-    // console.log(`projectId: ${projectId}`);
-
-    const network_egress = `metric.type="cloudfunctions.googleapis.com/function/network_egress" AND resource.labels.project_id="${projectId}"`;
-    const request = {
-      name: monClient.projectPath(projectId),
-      filter: network_egress,
-      interval: {
-        startTime: {
-          // how far back in minutes the results go
-          seconds: Date.now() / 1000 - 60 * 43200
-        },
-        endTime: {
-          seconds: Date.now() / 1000
-        }
-      }
-    };
-
-    try {
-      const [ timeSeries ] = await monClient.listTimeSeries(request);
-      // console.log(timeSeries);
-      res.locals.network_egress = timeSeries;
-
-      return next();
-    } catch (err) {
-      return next(`Could not get network egress data. ERROR: ${err}`);
     }
   },
 
@@ -167,7 +153,7 @@ const metricsController = {
     // console.log(`funcNames: ${funcNames}`);
     const { projectId } = req.params;
     // console.log(`projectId: ${projectId}`);
-
+    
     const user_memory_bytes = `metric.type="cloudfunctions.googleapis.com/function/user_memory_bytes" AND resource.labels.project_id="${projectId}"`;
     const request = {
       name: monClient.projectPath(projectId),
@@ -182,19 +168,68 @@ const metricsController = {
         }
       }
     };
-
+    
     try {
       const [ timeSeries ] = await monClient.listTimeSeries(request);
       // console.log(timeSeries);
-      res.locals.user_memory_bytes = timeSeries;
-
+      const parsedTimeSeries = timeSeries.map(obj => {
+        const newSeries = {};
+        const newPoints = [];
+        
+        obj.points.forEach(point => {
+          const time = new Date(point.interval.startTime.seconds * 1000);
+          newPoints.push({
+            timestamp: time,
+            value: point.value.distributionValue.mean / 1048576 // converting from bytes to mebibytes
+          });
+        });
+        
+        newSeries.points = newPoints;
+        newSeries.name = obj.resource.labels.function_name;
+        
+        return newSeries;
+      });
+      
+      res.locals.user_memory_bytes = parsedTimeSeries;
+      
       return next();
     } catch (err) {
       return next(`Could not get user memory bytes data. ERROR: ${err}`);
     }
+  },
+
+  networkEgress: async (req, res, next) => {
+    // const { funcNames } = res.locals;
+    // console.log(`funcNames: ${funcNames}`);
+    const { projectId } = req.params;
+    // console.log(`projectId: ${projectId}`);
+  
+    const network_egress = `metric.type="cloudfunctions.googleapis.com/function/network_egress" AND resource.labels.project_id="${projectId}"`;
+    const request = {
+      name: monClient.projectPath(projectId),
+      filter: network_egress,
+      interval: {
+        startTime: {
+          // how far back in minutes the results go
+          seconds: Date.now() / 1000 - 60 * 43200
+        },
+        endTime: {
+          seconds: Date.now() / 1000
+        }
+      }
+    };
+  
+    try {
+      const [ timeSeries ] = await monClient.listTimeSeries(request);
+      // console.log(timeSeries);
+      res.locals.network_egress = timeSeries;
+  
+      return next();
+    } catch (err) {
+      return next(`Could not get network egress data. ERROR: ${err}`);
+    }
   }
 };
-
 
 
 module.exports = metricsController;
