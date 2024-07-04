@@ -1,5 +1,8 @@
-.DummyGraph {
-    font-family: sans-serif;
-    text-align: center;
+ /* making sure users don't select text on XY axes across all browsers */
+  .chart-container {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none; 
   }
   
