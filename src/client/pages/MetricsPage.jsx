@@ -188,7 +188,7 @@ const MetricsPage = () => {
         <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr'}}>
           <div style={{marginBottom: '20px'}}>
             <Typography style={{display: 'flex', justifyContent: 'center'}}>
-              Execution Count:
+              {/* Execution Count: */}
             </Typography>
             {/* <Box sx={{bgcolor: '#D4F1F4', width: 550, height: 350, display: 'flex', justifyContent: 'center', alignItems: 'center'}}> */}
             <GraphComponent
@@ -201,7 +201,7 @@ const MetricsPage = () => {
           </div>
           <div style={{marginBottom: '20px'}}>
             <Typography style={{display: 'flex', justifyContent: 'center'}}>
-              Execution Time:
+              {/* Execution Time: */}
             </Typography>
             {/* <Box sx={{bgcolor: '#D4F1F4', width: 550, height: 350, display: 'flex', justifyContent: 'center', alignItems: 'center'}}> */}
             <GraphComponent
@@ -214,7 +214,7 @@ const MetricsPage = () => {
           </div>
           <div style={{marginBottom: '20px'}}>
             <Typography style={{display: 'flex', justifyContent: 'center'}}>
-              Memory:
+              {/* Memory: */}
             </Typography>
             <GraphComponent
               data={memoryData}
