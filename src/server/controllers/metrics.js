@@ -221,8 +221,25 @@ const metricsController = {
   
     try {
       const [ timeSeries ] = await monClient.listTimeSeries(request);
+      const parsedTimeSeries = timeSeries.map(obj => {
+        const newSeries = {};
+        const newPoints = [];
+        
+        obj.points.forEach(point => {
+          const time = new Date(point.interval.startTime.seconds * 1000);
+          newPoints.push({
+            timestamp: time,
+            value: point.value.int64Value / 1048576 // converting from bytes to mebibytes
+          });
+        });
+        
+        newSeries.points = newPoints;
+        newSeries.name = obj.resource.labels.function_name;
+        
+        return newSeries;
+      });
       // console.log(timeSeries);
-      res.locals.network_egress = timeSeries;
+      res.locals.network_egress = parsedTimeSeries;
   
       return next();
     } catch (err) {
