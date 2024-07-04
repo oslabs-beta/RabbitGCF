@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import NavBar from '../components/NavBar.jsx';
 import Box from '@mui/material/Box';
 import DrawerHeader from '../components/DrawerHeader.jsx';
@@ -9,8 +9,42 @@ import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, L
 
 const ForcastPage = () => {
   const [dataSeries, setDataSeries] = useState({});
+  const [filteredDataSeries, setFilteredDataSeries] = useState({});
+  const [filters, setFilters] = useState({
+    invocationCost: true,
+    cpuRAMCost: true,
+    cpuGHzCost: true,
+    networkBandwidthCost: true,
+    totalCost: true,
+  });
+  const [loaded, setLoaded] = useState(false);
+  const [funcList, setfuncList] = useState([]);
 
-  const forecast = () => {
+  const projectId = 'refined-engine-424416-p7';
+
+  const getFunctionList = async () => {
+    try {
+      const response = await fetch(`/api/metrics/funcs/${projectId}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const data = await response.json();
+      console.log(data);
+      const funcsComponent = data['funcNames'].map((func, index) => {
+        return(<option key={func.concat(index)} value={func}>{func}</option>)
+      });
+      setfuncList(funcsComponent);
+      setLoaded(true);
+    } catch (error) {
+      console.log('Error in getFunctionList: ', error);
+    }
+  }
+
+  useEffect(() => {
+    getFunctionList()
+  }, []);
+
+  const forecastSubmit = () => {
     console.log('forecast button clicked');
     const forecastArgs = {
       projectId: 'retrieve from State - placeholder',
@@ -22,18 +56,27 @@ const ForcastPage = () => {
       maxIncrements: Number(document.getElementById('maxIncrementsInput').value),
     }
 
-    console.log(forecastArgs);
-    fetch('api/forecast',{
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ forecastArgs: forecastArgs }),
-    })
-      .then(response => response.json())
-      .then(response => {
-        setDataSeries(response);
-      });
+    // console.log(forecastArgs);
+    try {
+      fetch('api/forecast',{
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ forecastArgs: forecastArgs }),
+      })
+        .then(response => response.json())
+        .then(response => {
+          setDataSeries(response);
+          setFilteredDataSeries(response);
+        });
+    } catch (err) {
+      console.log('Error in forecast fetch: ', err);
+    }
+  }
+
+  const filterForecast = () => {
+    const newFilters = filters;
   }
 
   return(
@@ -46,9 +89,7 @@ const ForcastPage = () => {
           <div>
             <label for='functionName'>Function: </label>
             <select name="functionName" id="functionNameInput">
-              <option value="placeholder">getCharacter - placeholder</option>
-              <option >addCharacter - placeholder</option>
-              <option >deleteCharacter - placeholder</option>
+              {funcList}
             </select>
           </div>
           <div>
@@ -118,11 +159,15 @@ const ForcastPage = () => {
             <label for='maxIncrements'>Max Increments: </label>
             <input type='number' id='maxIncrementsInput' name='maxIncrements' defaultValue={12}/>
           </div>
-          <button onClick={forecast}>Generate</button>
+          <button onClick={forecastSubmit}>Generate</button>
         </div>
         <Typography paragraph>
           This is your forecast
         </Typography>
+          <div id='legendCheckbox'>
+            <input type="checkbox" id="" name="invocationCosts" value="invocationCosts"></input>
+            <label for="invocationCosts"> Invocation Costs</label>
+          </div>
           <LineChart width={730} height={250} data={dataSeries}
               margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -139,7 +184,7 @@ const ForcastPage = () => {
             <BarChart
               width={500}
               height={300}
-              data={dataSeries}
+              data={filteredDataSeries}
               margin={{
                 top: 20,
                 right: 30,
