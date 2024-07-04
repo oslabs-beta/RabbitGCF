@@ -154,7 +154,7 @@ gcfPricingStructure.gcfRegionTiers = {
   }
 };
 
-gcfPricingStructure.gfcTypes = {
+gcfPricingStructure.gcfTypes = {
   "Memory: 128MB / CPU: 200MHz": { mb: 128, mhz: 200 },
   "Memory: 256MB / CPU: 400MHz": { mb: 256, mhz: 400 },
   "Memory: 512MB / CPU: 800MHz": { mb: 512, mhz: 800 },

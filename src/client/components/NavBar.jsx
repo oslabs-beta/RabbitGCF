@@ -109,7 +109,7 @@ export default function NavBar() {
 
   function forcastClick() {
     console.log('forcast clicked')
-    navigate('/forcast');
+    navigate('/forecast');
   }
 
   function functionsClick() {

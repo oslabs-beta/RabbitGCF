@@ -17,7 +17,7 @@ const App = () => {
           <Route path='/functions' element={<FunctionsPage />}/>
           <Route path='/login' element={<LoginPage />}/>
           <Route path='/metrics' element={<MetricsPage />}/>
-          <Route path='/forcast' element={<ForcastPage />}/>
+          <Route path='/forecast' element={<ForcastPage />}/>
           <Route path='/profile' element={<ProfilePage />}/>
         </Routes>
       </BrowserRouter>

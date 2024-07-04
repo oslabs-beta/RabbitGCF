@@ -1,5 +1,5 @@
 // Require dependencies
-const gcfPricingStructure = require('../gcfPricingStructure');
+const gcfPricingStructure = require('../../../gcfPricingStructure');
 
 // DUMMY DATA - DELETE LATER once connected to metrics middleware
 const dummyExecTime = [
@@ -56,6 +56,7 @@ const forecastController = {
    * and network bandwidth memory utilization
    */
   calcHistorical (req, res, next){
+    const { functionName } = req.body;
     console.log('calcHistorical middleware invoked =========');
     // fetch function metrics for the last 30 invocations to get average runtime and memory usage
     try {
@@ -64,12 +65,27 @@ const forecastController = {
        * ----- REFACTOR WHEN METRICS MIDDLEWARE COMPLETE -----
        * dummyExecTime and dummyMemory arrays should be retrieved from Metrics middleware and replaced below
        */  
-      const totalExecTimeMS = dummyExecTime.reduce((acc, dataPoint) => { return acc + dataPoint.timeMS }, 0);
-      const avgExecTimeMS = totalExecTimeMS / dummyExecTime.length;
-      res.locals.avgExecTimeMS = avgExecTimeMS / 1000;
+      const hstExecutionTimes = res.locals.execution_times.filter(func => {
+        if(func.name === functionName) return func;
+      })[0].points;
 
-      const totalMemoryKB = dummyMemory.reduce((acc, dataPoint) => { return acc + dataPoint.memoryKB }, 0);
-      const avgMemoryKB = totalMemoryKB / dummyMemory.length;
+      let hstExecutionTimeData = (hstExecutionTimes.length > 30) ? hstExecutionTimes.slice(0, 30) : hstExecutionTimes;
+
+      const totalExecTimeMS = hstExecutionTimeData.reduce((acc, dataPoint) => { return acc + dataPoint.value }, 0);
+      const avgExecTimeMS = totalExecTimeMS / hstExecutionTimeData.length;
+      res.locals.avgExecTimeMS = avgExecTimeMS / 1000;
+      
+      // Calc avg historical memory usage
+      // res.locals.user_memory_bytes
+      const hstMemory = res.locals.user_memory_bytes.filter(func => {
+        if(func.name === functionName) return func;
+      })[0].points;
+
+      let hstMemoryData = (hstMemory.length > 30) ? hstEMemory.slice(0, 30) : hstMemory;
+      // console.log(hstMemoryData);
+
+      const totalMemoryKB = hstMemoryData.reduce((acc, dataPoint) => { return acc + dataPoint.value }, 0);
+      const avgMemoryKB = totalMemoryKB / hstMemoryData.length;
       res.locals.avgMemoryKB = avgMemoryKB;
 
       console.log(`average memory in KB: ${avgMemoryKB} | average execution time in ms: ${avgExecTimeMS}`);
@@ -86,7 +102,7 @@ const forecastController = {
 
   forecast (req, res, next){
     // REFACTOR: Need to handle minimum number of instances pricing
-    const { region, generation, type, increments, maxIncrements } = req.body.forecastArgs;
+    const { region, generation, type, increments, maxIncrements } = req.body;
     // ------ Test data -----
     // const testArguments = {
     //   region: 'us-central1',
@@ -99,8 +115,10 @@ const forecastController = {
     
     // Retrieve gfc configurations
     const tier = gcfPricingStructure.gcfRegionTiers[region][generation];
-    const memoryConfig = gcfPricingStructure.gfcTypes[type].mb;
-    const cpuMHzConfig = gcfPricingStructure.gfcTypes[type].mhz;
+    // console.log(gcfPricingStructure.gcfRegionTiers[region][]);
+    // console.log('tier ===>',region, typeof generation, tier);
+    const memoryConfig = gcfPricingStructure.gcfTypes[type].mb;
+    const cpuMHzConfig = gcfPricingStructure.gcfTypes[type].mhz;
 
     // Create output array
     const forecastDataSeries = [];
