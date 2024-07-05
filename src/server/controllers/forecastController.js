@@ -57,6 +57,7 @@ const forecastController = {
    */
   calcHistorical (req, res, next){
     const { functionName } = req.body;
+
     console.log('calcHistorical middleware invoked =========');
     // fetch function metrics for the last 30 invocations to get average runtime and memory usage
     try {

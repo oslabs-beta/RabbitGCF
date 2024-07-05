@@ -33,7 +33,8 @@ app.use(express.static(path.join(__dirname, './../client')));
 // });
 
 app.get('/api/metrics/funcs/:projectId', metricsController.getFuncs, (req, res) => {
-  return res.status(200).send(res.locals.funcNames);
+  // return res.status(200).send(res.locals.funcNames);
+  return res.status(200).send(res.locals.funcConfigs);
 })
 
 app.get('/api/metrics/execution_count/:projectId', metricsController.executionCount, (req, res) => {

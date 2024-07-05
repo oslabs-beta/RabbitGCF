@@ -11,15 +11,11 @@ import gcfPricingStructure from '../../../gcfPricingStructure';
 const ForcastPage = () => {
   const [dataSeries, setDataSeries] = useState({});
   const [filteredDataSeries, setFilteredDataSeries] = useState({});
-  const [filters, setFilters] = useState({
-    invocationCost: true,
-    cpuRAMCost: true,
-    cpuGHzCost: true,
-    networkBandwidthCost: true,
-    totalCost: true,
-  });
-  const [loaded, setLoaded] = useState(false);
+  const [generationOptions, setGenerationOptions] = useState(['1','2']);
+  
   const [funcList, setfuncList] = useState([]);
+  const [configurations, setConfigurations] = useState({});
+  const [selectedFunc, setSelectedFunc] = useState({});
 
   const projectId = 'refined-engine-424416-p7';
 
@@ -31,11 +27,16 @@ const ForcastPage = () => {
       });
       const data = await response.json();
       console.log(data);
-      const funcsComponent = data.map((func, index) => {
-        return(<option key={func.concat(index)} value={func}>{func}</option>)
-      });
-      setfuncList(funcsComponent);
-      setLoaded(true);
+      
+      setfuncList(data.funcList);
+      setConfigurations(data.configurations);
+      setSelectedFunc(data.funcList[0]);
+
+      const funcNameInput = document.getElementById('functionNameInput');
+      funcNameInput.value = data.funcList[0];
+      console.log('getFunc first selected ==>', funcNameInput.value);
+      updateFields();
+      
     } catch (error) {
       console.log('Error in getFunctionList: ', error);
     }
@@ -44,6 +45,25 @@ const ForcastPage = () => {
   useEffect(() => {
     getFunctionList()
   }, []);
+
+  const updateGenerationOptions = () => {
+    // const region = document.getElementById('regionInput').value;
+    // console.log('updateGen region ==>',region);
+    // setGenerationOptions(Object.keys(gcfPricingStructure.gcfRegionTiers.region));
+    // console.log('updated generation options ==>', generationOptions);
+  }
+
+  const updateFields = () => {
+    const selected = document.getElementById('functionNameInput').value;
+    // const selected = selectedFunc;
+    console.log('updateFields selected==>', selected);
+    
+    // console.log(gcfPricingStructure.typeMapping[configurations[selected].funcType])
+    document.getElementById('typeInput').value = gcfPricingStructure.typeMapping[configurations[selected].funcType];
+    document.getElementById('regionInput').value = configurations[selected].funcRegion;
+    document.getElementById('generationInput').value = gcfPricingStructure.genMapping[configurations[selected].funcGeneration];
+
+  }
 
   const forecastSubmit = () => {
     console.log('forecast button clicked');
@@ -76,10 +96,6 @@ const ForcastPage = () => {
     }
   }
 
-  const filterForecast = () => {
-    const newFilters = filters;
-  }
-
   return(
     <div>
       <NavBar />
@@ -89,8 +105,12 @@ const ForcastPage = () => {
         <div>
           <div>
             <label for='functionName'>Function: </label>
-            <select name="functionName" id="functionNameInput">
-              {funcList}
+            <select onChange={updateFields} name="functionName" id="functionNameInput">
+              {
+                funcList.map(func => {
+                  return <option key={func} value={func}>{func}</option>
+                })
+              }
             </select>
           </div>
           <div>
@@ -105,15 +125,21 @@ const ForcastPage = () => {
             <label for='region'>Region: </label>
             <select name='region' id='regionInput'>
               {
-                Object.keys(gcfPricingStructure.gcfRegionTiers).map(region => {
+                Object.keys(gcfPricingStructure.gcfRegionTiers).map((region, i) => {
+                  if(i === 0) return <option selected="selected" key={region} value={region}>{region}</option>
                   return <option key={region} value={region}>{region}</option>
                 })
               }
             </select>
             <label for='generation'>GCF Generation: </label>
-            <select name='generation' id='generationInput'>
-              <option value='1'>1</option>
-              <option value='2'>2</option>
+            <select onChange={updateGenerationOptions()} name='generation' id='generationInput'>
+              {
+                generationOptions.map(generation => {
+                  return <option key={generation} value={generation}>{generation}</option>
+                })
+              }
+              {/* <option value='1'>1</option>
+              <option value='2'>2</option> */}
             </select>
           </div>
           <div>
