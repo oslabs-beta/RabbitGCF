@@ -14,39 +14,43 @@ const MetricsPage = () => {
   const [executionCountData, setExecutionCountData] = useState([]);
   const [executionTimeData, setExecutionTimeData] = useState([]);
   const [memoryData, setMemoryData] = useState([]);
-  const [functionName, setFunctionName] = useState('addCharacter');
-  // const [functionList, setFunctionList] = useState([]);
-  // const [selected, setSelected] = useState(false);
-  // const [listLoaded, setListLoaded] = useState(false);
+  const [networkData, setNetworkData] = useState([]);
+  
+  const [functionName, setFunctionName] = useState('getCharacters');
+  
+  const [functionList, setFunctionList] = useState([]);
+  const [listLoaded, setListLoaded] = useState(false);
 
-  // function handleFunctionSelect(e) {
-  //   setFunctionName(e.target.value);
-  //   console.log(functionName);
-  //   setSelected(true);
-  // }
+  const [selected, setSelected] = useState(false);
+
+  function handleFunctionSelect(e) {
+    setFunctionName(e.target.value);
+    console.log(functionName);
+    setSelected(true);
+  }
 
   const projectId = 'refined-engine-424416-p7';
 
-  // const getFunctionList = async () => {
-  //   try {
-  //     const response = await fetch(`/api/metrics/funcs/${projectId}`, {
-  //       method: 'GET',
-  //       headers: { 'Content-Type': 'application/json' },
-  //     });
-  //     const data = await response.json();
-  //     console.log(data);
-  //     setFunctionList(data['funcNames']);
-  //     setListLoaded(true);
-  //   } catch (error) {
-  //     console.log('Error in getFunctionList: ', error);
-  //   }
-  // }
+  const getFunctionList = async () => {
+    try {
+      const response = await fetch(`/api/metrics/funcs/${projectId}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const data = await response.json();
+      // console.log('functionList: ', data);
+      setFunctionList(data);
+      setListLoaded(true);
+    } catch (error) {
+      console.log('Error in getFunctionList: ', error);
+    }
+  }
   
-  // useEffect(() => {
-  //   getFunctionList();
-  // }, [])
+  useEffect(() => {
+    getFunctionList();
+  }, [])
 
-  let dummySwitch = true;
+  let dummySwitch = false;
 
   // dummy switch for fetch requests
   // if(selected) {
@@ -85,26 +89,27 @@ const MetricsPage = () => {
       }, []);
     } else {
       console.log('real data fetch requests');
-      // const projectId = 'refined-engine-424416-p7';
 
       const getExecutionCounts = async () => {
         try {
+          console.log('execution count reload')
           const response = await fetch(`/api/metrics/execution_count/${projectId}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
           });
           const data = await response.json();
-          // console.log(data);
+          // console.log('executionCount: ', data);
           const noNull = [];
-          data['execution_count'].forEach(el => {
+          data.forEach(el => {
             if(el) noNull.push(el);
           })
-          // console.log(noNull);
+          // console.log('noNull: ', noNull);
           let countData;
           noNull.forEach(el => {
             if(el.name === functionName) countData = el.points;
           })
-          // console.log(countData);
+          // console.log('countData: ', countData);
+          if(!countData) console.log('Empty execution count data');
           setExecutionCountData(countData);
         } catch (error) {
           console.log('Error in getExecutionCounts: ', error);
@@ -118,8 +123,18 @@ const MetricsPage = () => {
             headers: { 'Content-Type': 'application/json' },
           });
           const data = await response.json();
-          console.log(data);
-          setExecutionTimeData(data);
+          // console.log('executionTime: ', data);
+          const noNull = [];
+          data.forEach(el => {
+            if(el) noNull.push(el);
+          })
+          // console.log('noNull: ', noNull);
+          let timeData;
+          noNull.forEach(el => {
+            if(el.name === functionName) timeData = el.points;
+          })
+          // console.log(timeData)
+          setExecutionTimeData(timeData);
         } catch (error) {
           console.log('Error in getExecutionTimes: ', error);
         }
@@ -132,17 +147,51 @@ const MetricsPage = () => {
             headers: { 'Content-Type': 'application/json' },
           });
           const data = await response.json();
-          console.log(data);
-          setMemoryData(data);
+          const noNull = [];
+          data.forEach(el => {
+            if(el) noNull.push(el);
+          })
+          // console.log('noNull: ', noNull);
+          let memData;
+          noNull.forEach(el => {
+            if(el.name === functionName) memData = el.points;
+          })
+          // console.log(memData);
+          setMemoryData(memData);
         } catch (error) {
           console.log('Error in getMemoryBytes: ', error);
+        }
+      }
+      
+      const getNetworkEgress = async () => {
+        try {
+          const response = await fetch(`/api/metrics/network_egress/${projectId}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+          });
+          const data = await response.json();
+          console.log('data', data)
+          const noNull = [];
+          data.forEach(el => {
+            if(el) noNull.push(el);
+          })
+          // console.log('noNull: ', noNull);
+          let egressData;
+          noNull.forEach(el => {
+            if(el.name === functionName) egressData = el.points;
+          })
+          // console.log(egressData);
+          setNetworkData(egressData);
+        } catch (error) {
+          console.log('Error in getNetworkEgress: ', error);
         }
       }
 
       useEffect(() => {
         getExecutionCounts();
-        // getExecutionTimes();
-        // getMemoryBytes();
+        getExecutionTimes();
+        getMemoryBytes();
+        getNetworkEgress();
       }, [])
     }
   // }
@@ -155,8 +204,8 @@ const MetricsPage = () => {
         <DrawerHeader />
         <h1>Metrics Page</h1>
 
-        {/* <div>
-          <FormControl sx={{ m: 1, minWidth: 80 }}>
+        <div>
+          <FormControl sx={{ m: 'auto', minWidth: 80, maxWidth: 175, display: 'flex'}}>
             <InputLabel id="demo-simple-select-autowidth-label">Function</InputLabel>
             <Select
               labelId="demo-simple-select-autowidth-label"
@@ -168,18 +217,18 @@ const MetricsPage = () => {
             >
               { listLoaded ?
                 functionList.map(el => {
-                  return <MenuItem>{el}</MenuItem>
+                  return <MenuItem value={el} key={el}>{el}</MenuItem>
                 }) : null
               }
-              <MenuItem value="">
+              {/* <MenuItem value="">
                 <em>None</em>
-              </MenuItem>
-              <MenuItem value={10}>Twenty</MenuItem>
+              </MenuItem> */}
+              {/* <MenuItem value={10}>Twenty</MenuItem>
               <MenuItem value={21}>Twenty one</MenuItem>
-              <MenuItem value={22}>Twenty one and a half</MenuItem>
+              <MenuItem value={22}>Twenty one and a half</MenuItem> */}
             </Select>
           </FormControl>
-        </div> */}
+        </div>
 
         <Typography paragraph>
           These are your metrics:
@@ -188,7 +237,7 @@ const MetricsPage = () => {
         <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr'}}>
           <div style={{marginBottom: '20px'}}>
             <Typography style={{display: 'flex', justifyContent: 'center'}}>
-              {/* Execution Count: */}
+              Execution Count:
             </Typography>
             {/* <Box sx={{bgcolor: '#D4F1F4', width: 550, height: 350, display: 'flex', justifyContent: 'center', alignItems: 'center'}}> */}
             <GraphComponent
@@ -201,7 +250,7 @@ const MetricsPage = () => {
           </div>
           <div style={{marginBottom: '20px'}}>
             <Typography style={{display: 'flex', justifyContent: 'center'}}>
-              {/* Execution Time: */}
+              Execution Time:
             </Typography>
             {/* <Box sx={{bgcolor: '#D4F1F4', width: 550, height: 350, display: 'flex', justifyContent: 'center', alignItems: 'center'}}> */}
             <GraphComponent
@@ -214,13 +263,24 @@ const MetricsPage = () => {
           </div>
           <div style={{marginBottom: '20px'}}>
             <Typography style={{display: 'flex', justifyContent: 'center'}}>
-              {/* Memory: */}
+              Memory:
             </Typography>
             <GraphComponent
               data={memoryData}
               dataKey="value"
               statusKey="status"
               label="Memory (MB)"
+              />           
+          </div>
+          <div style={{marginBottom: '20px'}}>
+            <Typography style={{display: 'flex', justifyContent: 'center'}}>
+              Network Egress:
+            </Typography>
+            <GraphComponent
+              data={networkData}
+              dataKey="value"
+              statusKey="status"
+              label="Network Egress (MB)"
               />           
           </div>
               {/* <Box sx={{bgcolor: '#ffe5eb', width: 550, height: 350, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>

@@ -16,7 +16,7 @@ const columns = [
   { id: 'forcast', label: 'Forcast', minWidth: 100 }
 ];
 
-const rows = [];
+let rows = [];
 
 export default function FunctionTable() {
   const [page, setPage] = useState(0);
@@ -42,9 +42,7 @@ export default function FunctionTable() {
       });
       const data = await response.json();
       console.log(data);
-      data['funcNames'].forEach(el => {
-        rows.push(el) // update this for data shape
-      });
+      rows = data;
       setLoaded(true);
     } catch (error) {
       console.log('Error in getFunctionList: ', error);
