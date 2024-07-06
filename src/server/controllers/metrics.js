@@ -180,7 +180,7 @@ const metricsController = {
           const time = new Date(point.interval.startTime.seconds * 1000);
           newPoints.push({
             timestamp: time,
-            value: point.value.distributionValue.mean / 1048576 // converting from bytes to mebibytes
+            value: point.value.distributionValue.mean / 1048576 // converting from bytes to mebibytes (MiB)
           });
         });
         

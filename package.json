@@ -7,12 +7,12 @@
     "start": "nodemon src/server/server.js",
     "build": "webpack",
     "dev": "concurrently \"webpack serve --open\" \"nodemon src/server/server.js\"",
+    "docker-dev:hot": "docker-compose -f docker-compose-dev-hot.yml up",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@google-cloud/bigquery": "^7.7.1",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
     "@google-cloud/bigquery": "^7.7.1",
@@ -48,6 +48,7 @@
     "html-webpack-plugin": "^5.6.0",
     "recharts": "^2.12.7",
     "style-loader": "^4.0.0",
+    "webpack": "^5.92.1",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^5.0.4"
   }
