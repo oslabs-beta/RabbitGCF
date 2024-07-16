@@ -19,7 +19,6 @@ const MetricsPage = () => {
   const [functionName, setFunctionName] = useState('getCharacters');
   
   const [functionList, setFunctionList] = useState([]);
-  const [listLoaded, setListLoaded] = useState(false);
 
   const [selected, setSelected] = useState(false);
 
@@ -40,7 +39,6 @@ const MetricsPage = () => {
       const data = await response.json();
       // console.log('functionList: ', data);
       setFunctionList(data);
-      setListLoaded(true);
     } catch (error) {
       console.log('Error in getFunctionList: ', error);
     }
@@ -98,19 +96,9 @@ const MetricsPage = () => {
             headers: { 'Content-Type': 'application/json' },
           });
           const data = await response.json();
-          // console.log('executionCount: ', data);
-          const noNull = [];
-          data.forEach(el => {
-            if(el) noNull.push(el);
-          })
-          // console.log('noNull: ', noNull);
-          let countData;
-          noNull.forEach(el => {
-            if(el.name === functionName) countData = el.points;
-          })
-          // console.log('countData: ', countData);
-          if(!countData) console.log('Empty execution count data');
-          setExecutionCountData(countData);
+          delete data['getCharacters'];
+          console.log('executionCount data: ', data);
+          setExecutionCountData(data);
         } catch (error) {
           console.log('Error in getExecutionCounts: ', error);
         }
@@ -123,18 +111,8 @@ const MetricsPage = () => {
             headers: { 'Content-Type': 'application/json' },
           });
           const data = await response.json();
-          // console.log('executionTime: ', data);
-          const noNull = [];
-          data.forEach(el => {
-            if(el) noNull.push(el);
-          })
-          // console.log('noNull: ', noNull);
-          let timeData;
-          noNull.forEach(el => {
-            if(el.name === functionName) timeData = el.points;
-          })
-          // console.log(timeData)
-          setExecutionTimeData(timeData);
+          console.log('executionTime data: ', data);
+          setExecutionTimeData(data);
         } catch (error) {
           console.log('Error in getExecutionTimes: ', error);
         }
@@ -147,17 +125,8 @@ const MetricsPage = () => {
             headers: { 'Content-Type': 'application/json' },
           });
           const data = await response.json();
-          const noNull = [];
-          data.forEach(el => {
-            if(el) noNull.push(el);
-          })
-          // console.log('noNull: ', noNull);
-          let memData;
-          noNull.forEach(el => {
-            if(el.name === functionName) memData = el.points;
-          })
-          // console.log(memData);
-          setMemoryData(memData);
+          console.log('memory data: ', data);
+          setMemoryData(data);
         } catch (error) {
           console.log('Error in getMemoryBytes: ', error);
         }
@@ -170,18 +139,8 @@ const MetricsPage = () => {
             headers: { 'Content-Type': 'application/json' },
           });
           const data = await response.json();
-          console.log('data', data)
-          const noNull = [];
-          data.forEach(el => {
-            if(el) noNull.push(el);
-          })
-          // console.log('noNull: ', noNull);
-          let egressData;
-          noNull.forEach(el => {
-            if(el.name === functionName) egressData = el.points;
-          })
-          // console.log(egressData);
-          setNetworkData(egressData);
+          console.log('egress data: ', data)
+          setNetworkData(data);
         } catch (error) {
           console.log('Error in getNetworkEgress: ', error);
         }
@@ -215,7 +174,7 @@ const MetricsPage = () => {
               autoWidth
               label="Function"
             >
-              { listLoaded ?
+              { functionList ?
                 functionList.map(el => {
                   return <MenuItem value={el} key={el}>{el}</MenuItem>
                 }) : null
@@ -239,49 +198,61 @@ const MetricsPage = () => {
             <Typography style={{display: 'flex', justifyContent: 'center'}}>
               Execution Count:
             </Typography>
-            {/* <Box sx={{bgcolor: '#D4F1F4', width: 550, height: 350, display: 'flex', justifyContent: 'center', alignItems: 'center'}}> */}
-            <GraphComponent
-              data={executionCountData}
-              dataKey="value"
-              statusKey="status"
-              label="Execution Count"
-            />         
-            {/* </Box> */}
+            <Box sx={{width: 'full', height: 400, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+            { executionCountData[functionName] ? 
+              <GraphComponent
+                data={executionCountData[functionName]}
+                dataKey="value"
+                statusKey="status"
+                label="Execution Count"
+              /> : <Typography style={{display: 'flex', justifyContent: 'center'}}>Data not available</Typography>       
+            }
+            </Box>
           </div>
           <div style={{marginBottom: '20px'}}>
             <Typography style={{display: 'flex', justifyContent: 'center'}}>
               Execution Time:
             </Typography>
-            {/* <Box sx={{bgcolor: '#D4F1F4', width: 550, height: 350, display: 'flex', justifyContent: 'center', alignItems: 'center'}}> */}
-            <GraphComponent
-              data={executionTimeData}
-              dataKey="value"
-              statusKey="status"
-              label="Execution Time (ms)"
-            />         
-            {/* </Box> */}
+            <Box sx={{width: 'full', height: 400, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+            { executionTimeData[functionName] ?
+              <GraphComponent
+                data={executionTimeData[functionName]}
+                dataKey="value"
+                statusKey="status"
+                label="Execution Time (ms)"
+              /> : <Typography style={{display: 'flex', justifyContent: 'center'}}>Data not available</Typography>
+            }         
+            </Box>
           </div>
           <div style={{marginBottom: '20px'}}>
             <Typography style={{display: 'flex', justifyContent: 'center'}}>
               Memory:
             </Typography>
-            <GraphComponent
-              data={memoryData}
-              dataKey="value"
-              statusKey="status"
-              label="Memory (MB)"
-              />           
+            <Box sx={{width: 'full', height: 400, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+            { memoryData[functionName] ?
+                <GraphComponent
+                  data={memoryData[functionName]}
+                  dataKey="value"
+                  statusKey="status"
+                  label="Memory (MB)"
+                /> : <Typography style={{display: 'flex', justifyContent: 'center'}}>Data not available</Typography> 
+              }  
+            </Box>
           </div>
           <div style={{marginBottom: '20px'}}>
             <Typography style={{display: 'flex', justifyContent: 'center'}}>
               Network Egress:
             </Typography>
-            <GraphComponent
-              data={networkData}
-              dataKey="value"
-              statusKey="status"
-              label="Network Egress (MB)"
-              />           
+            <Box sx={{width: 'full', height: 400, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+            { networkData[functionName] ?
+              <GraphComponent
+                data={networkData[functionName]}
+                dataKey="value"
+                statusKey="status"
+                label="Network Egress (MB)"
+              /> : <Typography style={{display: 'flex', justifyContent: 'center'}}>Data not available</Typography> 
+            }
+            </Box>         
           </div>
               {/* <Box sx={{bgcolor: '#ffe5eb', width: 550, height: 350, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                 <ZoomGraph />
