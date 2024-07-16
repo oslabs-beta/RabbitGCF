@@ -52,6 +52,10 @@ app.get('api/metrics/network_egress/:projectId', metricsController.networkEgress
   return res.status(200).send(res.locals.network_egress);
 });
 
+// app.get('api/metrics/resources/:projectId', metricsController.getResources, (req, res) => {
+//   return res.status(200).send(res.locals.resources);
+// });
+
 // routers
 app.use('/api/auth', require('./routers/authRouter'));
 app.use('/api/user', require('./routers/userRouter'));

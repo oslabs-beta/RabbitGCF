@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon src/server/server.js",
-    "build": "webpack",
+    "build": "webpack --config ./webpack.config.js",
     "dev": "concurrently \"webpack serve --open\" \"nodemon src/server/server.js\"",
     "docker-dev:hot": "docker-compose -f docker-compose-dev-hot.yml up",
     "test": "echo \"Error: no test specified\" && exit 1"

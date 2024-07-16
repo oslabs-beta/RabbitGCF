@@ -228,7 +228,24 @@ const metricsController = {
     } catch (err) {
       return next(`Could not get network egress data. ERROR: ${err}`);
     }
-  }
+  },
+
+  // getResources: async (req, res, next) => {
+  //   const { projectId } = req.params;
+  //   const name = `projects/${projectId}`;
+
+  //   try {
+  //     const response = [];
+  //     const iterable = monClient.listMonitoredResourceDescriptors(name);
+  //     response.push(iterable);
+      
+  //     res.locals.resources = response;
+
+  //     return res.locals.resources;
+  //   } catch (err) {
+  //     return next(`Could not get resources list. ERROR: ${err}`);
+  //   }
+  // }
 };
 
 
