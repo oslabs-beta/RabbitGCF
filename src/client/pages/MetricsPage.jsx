@@ -14,39 +14,41 @@ const MetricsPage = () => {
   const [executionCountData, setExecutionCountData] = useState([]);
   const [executionTimeData, setExecutionTimeData] = useState([]);
   const [memoryData, setMemoryData] = useState([]);
-  const [functionName, setFunctionName] = useState('addCharacter');
-  // const [functionList, setFunctionList] = useState([]);
-  // const [selected, setSelected] = useState(false);
-  // const [listLoaded, setListLoaded] = useState(false);
+  const [networkData, setNetworkData] = useState([]);
+  
+  const [functionName, setFunctionName] = useState('getCharacters');
+  
+  const [functionList, setFunctionList] = useState([]);
 
-  // function handleFunctionSelect(e) {
-  //   setFunctionName(e.target.value);
-  //   console.log(functionName);
-  //   setSelected(true);
-  // }
+  const [selected, setSelected] = useState(false);
+
+  function handleFunctionSelect(e) {
+    setFunctionName(e.target.value);
+    console.log(functionName);
+    setSelected(true);
+  }
 
   const projectId = 'refined-engine-424416-p7';
 
-  // const getFunctionList = async () => {
-  //   try {
-  //     const response = await fetch(`/api/metrics/funcs/${projectId}`, {
-  //       method: 'GET',
-  //       headers: { 'Content-Type': 'application/json' },
-  //     });
-  //     const data = await response.json();
-  //     console.log(data);
-  //     setFunctionList(data['funcNames']);
-  //     setListLoaded(true);
-  //   } catch (error) {
-  //     console.log('Error in getFunctionList: ', error);
-  //   }
-  // }
+  const getFunctionList = async () => {
+    try {
+      const response = await fetch(`/api/metrics/funcs/${projectId}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const data = await response.json();
+      // console.log('functionList: ', data);
+      setFunctionList(data);
+    } catch (error) {
+      console.log('Error in getFunctionList: ', error);
+    }
+  }
   
-  // useEffect(() => {
-  //   getFunctionList();
-  // }, [])
+  useEffect(() => {
+    getFunctionList();
+  }, [])
 
-  let dummySwitch = true;
+  let dummySwitch = false;
 
   // dummy switch for fetch requests
   // if(selected) {
@@ -85,27 +87,18 @@ const MetricsPage = () => {
       }, []);
     } else {
       console.log('real data fetch requests');
-      // const projectId = 'refined-engine-424416-p7';
 
       const getExecutionCounts = async () => {
         try {
+          console.log('execution count reload')
           const response = await fetch(`/api/metrics/execution_count/${projectId}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
           });
           const data = await response.json();
-          // console.log(data);
-          const noNull = [];
-          data['execution_count'].forEach(el => {
-            if(el) noNull.push(el);
-          })
-          // console.log(noNull);
-          let countData;
-          noNull.forEach(el => {
-            if(el.name === functionName) countData = el.points;
-          })
-          // console.log(countData);
-          setExecutionCountData(countData);
+          delete data['getCharacters'];
+          console.log('executionCount data: ', data);
+          setExecutionCountData(data);
         } catch (error) {
           console.log('Error in getExecutionCounts: ', error);
         }
@@ -118,7 +111,7 @@ const MetricsPage = () => {
             headers: { 'Content-Type': 'application/json' },
           });
           const data = await response.json();
-          console.log(data);
+          console.log('executionTime data: ', data);
           setExecutionTimeData(data);
         } catch (error) {
           console.log('Error in getExecutionTimes: ', error);
@@ -132,17 +125,32 @@ const MetricsPage = () => {
             headers: { 'Content-Type': 'application/json' },
           });
           const data = await response.json();
-          console.log(data);
+          console.log('memory data: ', data);
           setMemoryData(data);
         } catch (error) {
           console.log('Error in getMemoryBytes: ', error);
         }
       }
+      
+      const getNetworkEgress = async () => {
+        try {
+          const response = await fetch(`/api/metrics/network_egress/${projectId}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+          });
+          const data = await response.json();
+          console.log('egress data: ', data)
+          setNetworkData(data);
+        } catch (error) {
+          console.log('Error in getNetworkEgress: ', error);
+        }
+      }
 
       useEffect(() => {
         getExecutionCounts();
-        // getExecutionTimes();
-        // getMemoryBytes();
+        getExecutionTimes();
+        getMemoryBytes();
+        getNetworkEgress();
       }, [])
     }
   // }
@@ -155,8 +163,8 @@ const MetricsPage = () => {
         <DrawerHeader />
         <h1>Metrics Page</h1>
 
-        {/* <div>
-          <FormControl sx={{ m: 1, minWidth: 80 }}>
+        <div>
+          <FormControl sx={{ m: 'auto', minWidth: 80, maxWidth: 175, display: 'flex'}}>
             <InputLabel id="demo-simple-select-autowidth-label">Function</InputLabel>
             <Select
               labelId="demo-simple-select-autowidth-label"
@@ -166,20 +174,20 @@ const MetricsPage = () => {
               autoWidth
               label="Function"
             >
-              { listLoaded ?
+              { functionList ?
                 functionList.map(el => {
-                  return <MenuItem>{el}</MenuItem>
+                  return <MenuItem value={el} key={el}>{el}</MenuItem>
                 }) : null
               }
-              <MenuItem value="">
+              {/* <MenuItem value="">
                 <em>None</em>
-              </MenuItem>
-              <MenuItem value={10}>Twenty</MenuItem>
+              </MenuItem> */}
+              {/* <MenuItem value={10}>Twenty</MenuItem>
               <MenuItem value={21}>Twenty one</MenuItem>
-              <MenuItem value={22}>Twenty one and a half</MenuItem>
+              <MenuItem value={22}>Twenty one and a half</MenuItem> */}
             </Select>
           </FormControl>
-        </div> */}
+        </div>
 
         <Typography paragraph>
           These are your metrics:
@@ -188,40 +196,63 @@ const MetricsPage = () => {
         <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr'}}>
           <div style={{marginBottom: '20px'}}>
             <Typography style={{display: 'flex', justifyContent: 'center'}}>
-              {/* Execution Count: */}
+              Execution Count:
             </Typography>
-            {/* <Box sx={{bgcolor: '#D4F1F4', width: 550, height: 350, display: 'flex', justifyContent: 'center', alignItems: 'center'}}> */}
-            <GraphComponent
-              data={executionCountData}
-              dataKey="value"
-              statusKey="status"
-              label="Execution Count"
-            />         
-            {/* </Box> */}
+            <Box sx={{width: 'full', height: 400, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+            { executionCountData[functionName] ? 
+              <GraphComponent
+                data={executionCountData[functionName]}
+                dataKey="value"
+                statusKey="status"
+                label="Execution Count"
+              /> : <Typography style={{display: 'flex', justifyContent: 'center'}}>Data not available</Typography>       
+            }
+            </Box>
           </div>
           <div style={{marginBottom: '20px'}}>
             <Typography style={{display: 'flex', justifyContent: 'center'}}>
-              {/* Execution Time: */}
+              Execution Time:
             </Typography>
-            {/* <Box sx={{bgcolor: '#D4F1F4', width: 550, height: 350, display: 'flex', justifyContent: 'center', alignItems: 'center'}}> */}
-            <GraphComponent
-              data={executionTimeData}
-              dataKey="value"
-              statusKey="status"
-              label="Execution Time (ms)"
-            />         
-            {/* </Box> */}
+            <Box sx={{width: 'full', height: 400, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+            { executionTimeData[functionName] ?
+              <GraphComponent
+                data={executionTimeData[functionName]}
+                dataKey="value"
+                statusKey="status"
+                label="Execution Time (ms)"
+              /> : <Typography style={{display: 'flex', justifyContent: 'center'}}>Data not available</Typography>
+            }         
+            </Box>
           </div>
           <div style={{marginBottom: '20px'}}>
             <Typography style={{display: 'flex', justifyContent: 'center'}}>
-              {/* Memory: */}
+              Memory:
             </Typography>
-            <GraphComponent
-              data={memoryData}
-              dataKey="value"
-              statusKey="status"
-              label="Memory (MB)"
-              />           
+            <Box sx={{width: 'full', height: 400, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+            { memoryData[functionName] ?
+                <GraphComponent
+                  data={memoryData[functionName]}
+                  dataKey="value"
+                  statusKey="status"
+                  label="Memory (MB)"
+                /> : <Typography style={{display: 'flex', justifyContent: 'center'}}>Data not available</Typography> 
+              }  
+            </Box>
+          </div>
+          <div style={{marginBottom: '20px'}}>
+            <Typography style={{display: 'flex', justifyContent: 'center'}}>
+              Network Egress:
+            </Typography>
+            <Box sx={{width: 'full', height: 400, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+            { networkData[functionName] ?
+              <GraphComponent
+                data={networkData[functionName]}
+                dataKey="value"
+                statusKey="status"
+                label="Network Egress (MB)"
+              /> : <Typography style={{display: 'flex', justifyContent: 'center'}}>Data not available</Typography> 
+            }
+            </Box>         
           </div>
               {/* <Box sx={{bgcolor: '#ffe5eb', width: 550, height: 350, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                 <ZoomGraph />
