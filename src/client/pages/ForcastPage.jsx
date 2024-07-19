@@ -3,19 +3,33 @@ import NavBar from '../components/NavBar.jsx';
 import Box from '@mui/material/Box';
 import DrawerHeader from '../components/DrawerHeader.jsx';
 import Typography from '@mui/material/Typography';
-import { Button } from '@mui/base/Button';
+import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import gcfPricingStructure from '../../../gcfPricingStructure';
 
 
 const ForcastPage = () => {
+  const [isLoaded, setLoaded] = useState(false);
+  
+  const [funcOptionsElements, setFuncOptionsElements] = useState([]);
+  const [typeOptionsElements, setTypeOptionsElements] = useState([]);
+  const [regionOptionsElements, setRegionOptionsElements] = useState([]);
+  const [generationOptionsElements, setGenerationOptionsElements] = useState(['1','2']);
+
+  const [selectedFunc, setSelectedFunc] = useState();
+  const [isSelected, setSelected] = useState(false);
+
+  const [typeField, setTypeField] = useState();
+  const [regionField, setRegionField] = useState();
+  const [generationFields, setGenerationFields] = useState();
+  
   const [dataSeries, setDataSeries] = useState({});
   const [filteredDataSeries, setFilteredDataSeries] = useState({});
-  const [generationOptions, setGenerationOptions] = useState(['1','2']);
+  
   
   const [funcList, setfuncList] = useState([]);
-  const [configurations, setConfigurations] = useState({});
-  const [selectedFunc, setSelectedFunc] = useState({});
+  const [configurations, setConfigurations] = useState();
+  
 
   const projectId = 'refined-engine-424416-p7';
 
@@ -26,15 +40,12 @@ const ForcastPage = () => {
         headers: { 'Content-Type': 'application/json' },
       });
       const data = await response.json();
-      console.log(data);
-      
+      // console.log('data ==>', data.configurations);
+
       setfuncList(data.funcList);
       setConfigurations(data.configurations);
       setSelectedFunc(data.funcList[0]);
-
-      const funcNameInput = document.getElementById('functionNameInput');
-      funcNameInput.value = data.funcList[0];
-      console.log('getFunc first selected ==>', funcNameInput.value);
+      setSelected(funcList[0]);
       updateFields();
       
     } catch (error) {
@@ -42,8 +53,40 @@ const ForcastPage = () => {
     }
   }
 
+  const loadGCFOptions = () => {
+    setFuncOptionsElements(
+      
+    )    
+
+    setTypeOptionsElements(
+      // typeOptions
+      Object.keys(gcfPricingStructure.gcfTypes).map(type => 
+        <option key={type} value={type}>{type}</option>
+      )
+    )
+
+    setRegionOptionsElements(
+      Object.keys(gcfPricingStructure.gcfRegionTiers).map(region => 
+        <option key={region} value={region}>{region}</option>
+      )
+    )
+
+    setGenerationOptionsElements(
+      [1,2].map(generation => {
+        return <option key={generation} value={generation}>{generation}</option>
+      })
+    )
+  }
+
+  const setDefaultFields = () => {
+    
+  }
+
   useEffect(() => {
-    getFunctionList()
+    loadGCFOptions();
+    setDefaultFields();
+    getFunctionList();
+    // updateFields();
   }, []);
 
   const updateGenerationOptions = () => {
@@ -54,15 +97,19 @@ const ForcastPage = () => {
   }
 
   const updateFields = () => {
-    const selected = document.getElementById('functionNameInput').value;
-    // const selected = selectedFunc;
-    console.log('updateFields selected==>', selected);
-    
-    // console.log(gcfPricingStructure.typeMapping[configurations[selected].funcType])
-    document.getElementById('typeInput').value = gcfPricingStructure.typeMapping[configurations[selected].funcType];
-    document.getElementById('regionInput').value = configurations[selected].funcRegion;
-    document.getElementById('generationInput').value = gcfPricingStructure.genMapping[configurations[selected].funcGeneration];
+    // const type = gcfPricingStructure.typeMapping[configurations[selectedFunc][funcType]];
+    // console.log(type);
+    setTypeField();
+    setRegionField();
+    setGenerationFields();
 
+    setLoaded(true);
+  }
+
+  const handleFunctionSelect = (e) => {
+    setSelectedFunc(e.target.value);
+    console.log(selectedFunc);
+    setSelected(true);
   }
 
   const forecastSubmit = () => {
@@ -103,43 +150,118 @@ const ForcastPage = () => {
         <DrawerHeader />
         <h1>Forecast Page</h1>
         <div>
+          <FormControl sx={{ m: 'auto', minWidth: 80, maxWidth: 175, display: 'flex'}}>
+            <InputLabel id="demo-simple-select-autowidth-label">Function</InputLabel>
+            {selectedFunc && <Select
+              labelId="demo-simple-select-autowidth-label"
+              id="demo-simple-select-autowidth"
+              value={selectedFunc}
+              onChange={handleFunctionSelect}
+              autoWidth
+              label="Function"
+            >
+              { isLoaded && funcList ?
+                funcList.map(el => {
+                  return <MenuItem value={el} key={el}>{el}</MenuItem>
+                }) : null
+              }
+            </Select>}
+          </FormControl>
+        </div>
+        <div>
+          <FormControl sx={{ m: 'auto', minWidth: 80, maxWidth: 175, display: 'flex'}}>
+            <InputLabel id="demo-simple-select-autowidth-label">Type</InputLabel>
+            {selectedFunc && configurations && <Select
+              labelId="demo-simple-select-autowidth-label"
+              id="demo-simple-select-autowidth"
+              value={gcfPricingStructure.typeMapping[configurations[selectedFunc].funcType]}
+              // onChange={handleFunctionSelect}
+              autoWidth
+              label="Type"
+            >
+              { configurations ?
+                Object.keys(gcfPricingStructure.gcfTypes).map(el => {
+                  return <MenuItem value={el} key={el}>{el}</MenuItem>
+                }) : null
+              }
+            </Select>}
+          </FormControl>
+        </div>
+        <div>
+          <FormControl sx={{ m: 'auto', minWidth: 80, maxWidth: 175, display: 'flex'}}>
+            <InputLabel id="demo-simple-select-autowidth-label">Region</InputLabel>
+            {selectedFunc && configurations && <Select
+              labelId="demo-simple-select-autowidth-label"
+              id="demo-simple-select-autowidth"
+              value={configurations[selectedFunc].funcRegion}
+              // onChange={handleFunctionSelect}
+              autoWidth
+              label="Region"
+            >
+              { configurations ?
+                Object.keys(gcfPricingStructure.gcfRegionTiers).map(el => {
+                  return <MenuItem value={el} key={el}>{el}</MenuItem>
+                }) : null
+              }
+            </Select>}
+          </FormControl>
+        </div>
+        <div>
+          <FormControl sx={{ m: 'auto', minWidth: 80, maxWidth: 175, display: 'flex'}}>
+            <InputLabel id="demo-simple-select-autowidth-label">GCF Generation</InputLabel>
+            {selectedFunc && configurations && <Select
+              labelId="demo-simple-select-autowidth-label"
+              id="demo-simple-select-autowidth"
+              value={gcfPricingStructure.genMapping[configurations[selectedFunc].funcGeneration]}
+              // onChange={handleFunctionSelect}
+              autoWidth
+              label="GCF Generation"
+            >
+              { configurations ?
+                Object.keys(gcfPricingStructure.gcfRegionTiers[configurations[selectedFunc].funcRegion]).map(el => {
+                  return <MenuItem value={el} key={el}>{el}</MenuItem>
+                }) : null
+              }
+            </Select>}
+          </FormControl>
+        </div>
+        <div>
           <div>
             <label for='functionName'>Function: </label>
-            <select onChange={updateFields} name="functionName" id="functionNameInput">
+            <select 
+              onChange={updateFields}
+              name="functionName"
+              id="functionNameInput"
+              value={selectedFunc}>
               {
-                funcList.map(func => {
-                  return <option key={func} value={func}>{func}</option>
+                funcList.map((func, i) => {
+                  return <option key={func} value={func}>{func}</option>;
                 })
               }
             </select>
           </div>
           <div>
             <label for='type'>Type: </label>
-            <select name="type" id="typeInput">
-              {
-                Object.keys(gcfPricingStructure.gcfTypes).map(type => {
-                  return <option key={type} value={type}>{type}</option>
-                })
+            <select name="type" id="typeInput" value>
+              { 
+                isLoaded && typeOptionsElements
+                // Object.keys(gcfPricingStructure.gcfTypes).map((type, i) => {
+                //   if(i === 0) return <option key={type} value={type} selected="selected">{type}</option>;
+                //   return <option key={type} value={type}>{type}</option>;
+                // })
               }
             </select>
             <label for='region'>Region: </label>
             <select name='region' id='regionInput'>
-              {
-                Object.keys(gcfPricingStructure.gcfRegionTiers).map((region, i) => {
-                  if(i === 0) return <option selected="selected" key={region} value={region}>{region}</option>
-                  return <option key={region} value={region}>{region}</option>
-                })
+              { 
+                isLoaded && regionOptionsElements
               }
             </select>
             <label for='generation'>GCF Generation: </label>
             <select onChange={updateGenerationOptions()} name='generation' id='generationInput'>
               {
-                generationOptions.map(generation => {
-                  return <option key={generation} value={generation}>{generation}</option>
-                })
+                isLoaded && generationOptionsElements
               }
-              {/* <option value='1'>1</option>
-              <option value='2'>2</option> */}
             </select>
           </div>
           <div>
