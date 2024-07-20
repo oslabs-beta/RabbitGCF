@@ -5,7 +5,7 @@ import DrawerHeader from '../components/DrawerHeader.jsx';
 import Typography from '@mui/material/Typography';
 import FunctionTable from '../components/FunctionTable.jsx';
 
-const FunctionsPage = () => {
+const FunctionsPage = (props) => {
 
   return(
     <div>
@@ -16,7 +16,7 @@ const FunctionsPage = () => {
         <Typography paragraph>
           Table:
         </Typography>
-        <FunctionTable />
+        <FunctionTable functionName={props.functionName} setFunctionName={props.setFunctionName}/>
       </Box>
     </div>
   );
