@@ -8,7 +8,7 @@ import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, L
 import gcfPricingStructure from '../../../gcfPricingStructure';
 
 
-const ForcastPage = () => {
+const ForecastPage = () => {
   const [isLoaded, setLoaded] = useState(false);
   
   const [funcOptionsElements, setFuncOptionsElements] = useState([]);
@@ -327,4 +327,4 @@ const ForcastPage = () => {
   );
 };
 
-export default ForcastPage;
+export default ForecastPage;

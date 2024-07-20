@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import HomePage from './pages/HomePage.jsx';
 import MetricsPage from './pages/MetricsPage.jsx';
-import ForcastPage from './pages/ForcastPage.jsx';
+import ForecastPage from './pages/ForcastPage.jsx';
 import ProfilePage from './pages/ProfilePage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import FunctionsPage from './pages/FunctionsPage.jsx';
@@ -18,7 +18,7 @@ const App = () => {
           <Route path='/functions' element={<FunctionsPage functionName={functionName} setFunctionName={setFunctionName}/>}/>
           <Route path='/login' element={<LoginPage />}/>
           <Route path='/metrics' element={<MetricsPage functionName={functionName} setFunctionName={setFunctionName}/>}/>
-          <Route path='/forcast' element={<ForcastPage />}/>
+          <Route path='/forecast' element={<ForecastPage />}/>
           <Route path='/profile' element={<ProfilePage />}/>
         </Routes>
       </BrowserRouter>
