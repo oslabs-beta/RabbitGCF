@@ -231,56 +231,11 @@ const ForecastPage = () => {
             </Select>}
           </FormControl>
         </div>
-        <TextField id="incrementsInput" label="Invocation Increments" variant="filled" defaultValue={500000}/>
-        <TextField id="maxIncrementsInput" label="Max Increments" variant="filled" defaultValue={5}/>
-        <Button onClick={forecastSubmit} variant="contained">Submit</Button>
-        {/* <div>
-          <div>
-            <label for='functionName'>Function: </label>
-            <select 
-              onChange={updateFields}
-              name="functionName"
-              id="functionNameInput"
-              value={selectedFunc}>
-              {
-                funcList.map((func, i) => {
-                  return <option key={func} value={func}>{func}</option>;
-                })
-              }
-            </select>
-          </div>
-          <div>
-            <label for='type'>Type: </label>
-            <select name="type" id="typeInput" value>
-              { 
-                isLoaded && typeOptionsElements
-                // Object.keys(gcfPricingStructure.gcfTypes).map((type, i) => {
-                //   if(i === 0) return <option key={type} value={type} selected="selected">{type}</option>;
-                //   return <option key={type} value={type}>{type}</option>;
-                // })
-              }
-            </select>
-            <label for='region'>Region: </label>
-            <select name='region' id='regionInput'>
-              { 
-                isLoaded && regionOptionsElements
-              }
-            </select>
-            <label for='generation'>GCF Generation: </label>
-            <select onChange={updateGenerationOptions()} name='generation' id='generationInput'>
-              {
-                isLoaded && generationOptionsElements
-              }
-            </select>
-          </div>
-          <div>
-            <label for='increments'>Invocation Increments: </label>
-            <input type='number' id='incrementsInput' name='increments' defaultValue={500000}/>
-            <label for='maxIncrements'>Max Increments: </label>
-            <input type='number' id='maxIncrementsInput' name='maxIncrements' defaultValue={12}/>
-          </div>
-          <button onClick={forecastSubmit}>Generate</button>
-        </div> */}
+        <div>
+          <TextField id="incrementsInput" label="Invocation Increments" variant="filled" defaultValue={500000}/>
+          <TextField id="maxIncrementsInput" label="Max Increments" variant="filled" defaultValue={5}/>
+          <Button onClick={forecastSubmit} variant="contained">Submit</Button>
+        </div>
         <Typography paragraph>
           This is your forecast
         </Typography>

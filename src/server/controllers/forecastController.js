@@ -67,12 +67,11 @@ const forecastController = {
        * ----- REFACTOR WHEN METRICS MIDDLEWARE COMPLETE -----
        * dummyExecTime and dummyMemory arrays should be retrieved from Metrics middleware and replaced below
        */  
-      
-      const hstExecutionTimes = res.locals.execution_times.filter(func => {
-        if(func.name === functionName) return func;
-      })[0];
+      // console.log(res.locals.execution_times[functionName]);
+      const hstExecutionTimes = res.locals.execution_times[functionName];
 
       if(hstExecutionTimes === undefined) {
+        console.log('test');
         return next({
           log: 'Error in forecast middleware - no historical invocation data found',
           status: 408,
@@ -80,17 +79,15 @@ const forecastController = {
         });
       }
 
-      let hstExecutionTimeData = (hstExecutionTimes.points.length > 30) ? hstExecutionTimes.points.slice(0, 30) : hstExecutionTimes.points;
+      let hstExecutionTimeData = (hstExecutionTimes.length > 30) ? hstExecutionTimes.slice(0, 30) : hstExecutionTimes;
       
       const totalExecTimeMS = hstExecutionTimeData.reduce((acc, dataPoint) => { return acc + dataPoint.value }, 0);
       const avgExecTimeMS = totalExecTimeMS / hstExecutionTimeData.length;
       res.locals.avgExecTimeMS = avgExecTimeMS / 1000;
-      
+
       // Calc avg historical memory usage
       // console.log(res.locals.user_memory_bytes);
-      const hstMemory = res.locals.user_memory_bytes.filter(func => {
-        if(func.name === functionName) return func;
-      })[0].points;
+      const hstMemory = res.locals.user_memory_bytes[functionName];
       
       let hstMemoryData = (hstMemory.length > 30) ? hstMemory.slice(0, 30) : hstMemory;
       
