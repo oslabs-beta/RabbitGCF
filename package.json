@@ -12,7 +12,6 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@google-cloud/bigquery": "^7.7.1",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
     "@google-cloud/bigquery": "^7.7.1",
@@ -36,7 +35,8 @@
     "path": "^0.12.7",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.23.1"
+    "react-router-dom": "^6.23.1",
+    "react-select": "^5.8.0"
   },
   "devDependencies": {
     "@babel/core": "^7.24.6",

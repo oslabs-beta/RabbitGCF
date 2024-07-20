@@ -1,39 +1,154 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import NavBar from '../components/NavBar.jsx';
 import Box from '@mui/material/Box';
 import DrawerHeader from '../components/DrawerHeader.jsx';
 import Typography from '@mui/material/Typography';
-import { Button } from '@mui/base/Button';
+import { FormControl, InputLabel, Select, MenuItem, TextField, Button } from '@mui/material';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import gcfPricingStructure from '../../../gcfPricingStructure';
 
 
-const ForcastPage = () => {
+const ForecastPage = () => {
+  const [isLoaded, setLoaded] = useState(false);
+  
+  const [funcOptionsElements, setFuncOptionsElements] = useState([]);
+  const [typeOptionsElements, setTypeOptionsElements] = useState([]);
+  const [regionOptionsElements, setRegionOptionsElements] = useState([]);
+  const [generationOptionsElements, setGenerationOptionsElements] = useState(['1','2']);
+
+  const [selectedFunc, setSelectedFunc] = useState();
+  const [selectedType, setSelectedType] = useState();
+  const [selectedRegion, setSelectedRegion] = useState();
+  const [selectedGen, setSelectedGen] = useState();
+
+  const [generationOptions, setGenerationOptions] = useState();
+
+  const [typeField, setTypeField] = useState();
+  const [regionField, setRegionField] = useState();
+  const [generationFields, setGenerationFields] = useState();
+  
   const [dataSeries, setDataSeries] = useState({});
+  const [filteredDataSeries, setFilteredDataSeries] = useState({});
+  
+  
+  const [funcList, setfuncList] = useState([]);
+  const [configurations, setConfigurations] = useState();
+  
 
-  const forecast = () => {
+  const projectId = 'refined-engine-424416-p7';
+
+  const getFunctionList = async () => {
+    try {
+      const response = await fetch(`/api/metrics/funcs/${projectId}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const data = await response.json();
+      // console.log('data ==>', data.funcList);
+
+      setfuncList(data.funcList);
+      setConfigurations(data.configurations);
+      setSelectedFunc(data.funcList[0]);
+      updateFields('Function', data.funcList[0], data.configurations);
+      
+    } catch (error) {
+      console.log('Error in getFunctionList: ', error);
+    }
+  }
+
+  useEffect(() => {
+    // loadGCFOptions();
+    // setDefaultFields();
+    getFunctionList();
+    // updateFields();
+  }, []);
+
+  const updateFields = (optionType, selectedOption, configs = configurations) => {
+    switch (optionType) {
+      case 'Function':
+        setSelectedType(gcfPricingStructure.typeMapping[configs[selectedOption].funcType]);
+        setSelectedRegion(configs[selectedOption].funcRegion);
+        updateFields('Region', configs[selectedOption].funcRegion);
+        updateFields('GCF-Generation', selectedOption, configs);
+        break;
+      case 'Region':
+        setGenerationOptions(Object.keys(gcfPricingStructure.gcfRegionTiers[selectedOption]));
+        break;
+      case 'GCF-Generation':
+        // console.log('UpdateFields option Generation:', configs[selectedOption]);
+        setSelectedGen(gcfPricingStructure.genMapping[configs[selectedOption].funcGeneration]);
+        break;
+      default:
+        console.log('Error in handleOptionClick in Forecast Page');
+    }
+    setLoaded(true);
+  }
+
+  const handleOptionChange = (e) => {
+    // console.log(e.target.name);
+    switch (e.target.name) {
+      case 'Function':
+        console.log('switched Functions');
+        setSelectedFunc(e.target.value);
+        updateFields('Function', e.target.value);
+        break;
+      case 'Type':
+        console.log('switched Types')
+        setSelectedType(e.target.value);
+        break;
+      case 'Region':
+        console.log('switched Region')
+        setSelectedRegion(e.target.value);
+        updateFields('Region', e.target.value);
+        break;
+      case 'GCF-Generation':
+        console.log('switched Generations')
+        setSelectedGen(e.target.value);
+        break;
+      default:
+        console.log('Error in handleOptionClick in Forecast Page');
+    }
+    
+  }
+
+  const forecastSubmit = () => {
     console.log('forecast button clicked');
     const forecastArgs = {
-      projectId: 'retrieve from State - placeholder',
-      functionName: document.getElementById('functionNameInput').value,
-      type: document.getElementById('typeInput').value,
-      region: document.getElementById('regionInput').value,
-      generation: document.getElementById('generationInput').value,
+      // projectId: 'retrieve from State - placeholder',
+      // functionName: document.getElementById('functionNameInput').value,
+      // type: document.getElementById('typeInput').value,
+      // region: document.getElementById('regionInput').value,
+      // generation: document.getElementById('generationInput').value,
+      // increments: Number(document.getElementById('incrementsInput').value),
+      // maxIncrements: Number(document.getElementById('maxIncrementsInput').value),
+
+      functionName: document.getElementsByName('Function')[0].value,
+      type: document.getElementsByName('Type')[0].value,
+      region: document.getElementsByName('Region')[0].value,
+      generation: document.getElementsByName('GCF-Generation')[0].value,
       increments: Number(document.getElementById('incrementsInput').value),
       maxIncrements: Number(document.getElementById('maxIncrementsInput').value),
+
+      
     }
 
-    console.log(forecastArgs);
-    fetch('api/forecast',{
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ forecastArgs: forecastArgs }),
-    })
-      .then(response => response.json())
-      .then(response => {
-        setDataSeries(response);
-      });
+    // console.log(forecastArgs);
+    try {
+      fetch(`api/forecast/${projectId}`,{
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(forecastArgs),
+      })
+        .then(response => response.json())
+        .then(response => {
+          setDataSeries(response);
+          setFilteredDataSeries(response);
+        });
+    } catch (err) {
+      console.log('Error in forecast fetch: ', err);
+    }
   }
 
   return(
@@ -43,73 +158,119 @@ const ForcastPage = () => {
         <DrawerHeader />
         <h1>Forecast Page</h1>
         <div>
+          <FormControl sx={{ m: 'auto', minWidth: 80, maxWidth: 175}}>
+            <InputLabel id="demo-simple-select-autowidth-label">Function</InputLabel>
+            {selectedFunc && <Select
+              labelId="demo-simple-select-autowidth-label"
+              id="demo-simple-select-autowidth"
+              value={selectedFunc}
+              onChange={handleOptionChange}
+              autoWidth
+              label="Function"
+              name="Function"
+            >
+              { funcList ?
+                funcList.map(el => {
+                  return <MenuItem value={el} key={el}>{el}</MenuItem>
+                }) : null
+              }
+            </Select>}
+          </FormControl>
+          <FormControl sx={{ m: 'auto', minWidth: 80, maxWidth: 175}}>
+            <InputLabel id="demo-simple-select-autowidth-label">Type</InputLabel>
+            {selectedFunc && <Select
+              labelId="demo-simple-select-autowidth-label"
+              id="demo-simple-select-autowidth"
+              value={selectedType}
+              onChange={handleOptionChange}
+              autoWidth
+              label="Type"
+              name="Type"
+            >
+              { configurations ?
+                Object.keys(gcfPricingStructure.gcfTypes).map(el => {
+                  return <MenuItem value={el} key={el}>{el}</MenuItem>
+                }) : null
+              }
+            </Select>}
+          </FormControl>
+          <FormControl sx={{ m: 'auto', minWidth: 80, maxWidth: 175}}>
+            <InputLabel id="demo-simple-select-autowidth-label">Region</InputLabel>
+            {selectedFunc && configurations && <Select
+              labelId="demo-simple-select-autowidth-label"
+              id="demo-simple-select-autowidth"
+              value={selectedRegion}
+              onChange={handleOptionChange}
+              autoWidth
+              label="Region"
+              name="Region"            >
+              { configurations ?
+                Object.keys(gcfPricingStructure.gcfRegionTiers).map(el => {
+                  return <MenuItem value={el} key={el}>{el}</MenuItem>
+                }) : null
+              }
+            </Select>}
+          </FormControl>
+          <FormControl sx={{ m: 'auto', minWidth: 80, maxWidth: 175}}>
+            <InputLabel id="demo-simple-select-autowidth-label">GCF Generation</InputLabel>
+            {selectedFunc && configurations && <Select
+              labelId="demo-simple-select-autowidth-label"
+              id="demo-simple-select-autowidth"
+              // value={gcfPricingStructure.genMapping[configurations[selectedFunc].funcGeneration]}
+              value={selectedGen}
+              onChange={handleOptionChange}
+              autoWidth
+              label="GCF-Generation"
+              name="GCF-Generation"
+            >
+              { configurations ?
+                generationOptions.map(el => {
+                  return <MenuItem value={el} key={el}>{el}</MenuItem>
+                }) : null
+              }
+            </Select>}
+          </FormControl>
+        </div>
+        <TextField id="incrementsInput" label="Invocation Increments" variant="filled" defaultValue={500000}/>
+        <TextField id="maxIncrementsInput" label="Max Increments" variant="filled" defaultValue={5}/>
+        <Button onClick={forecastSubmit} variant="contained">Submit</Button>
+        {/* <div>
           <div>
             <label for='functionName'>Function: </label>
-            <select name="functionName" id="functionNameInput">
-              <option value="placeholder">getCharacter - placeholder</option>
-              <option >addCharacter - placeholder</option>
-              <option >deleteCharacter - placeholder</option>
+            <select 
+              onChange={updateFields}
+              name="functionName"
+              id="functionNameInput"
+              value={selectedFunc}>
+              {
+                funcList.map((func, i) => {
+                  return <option key={func} value={func}>{func}</option>;
+                })
+              }
             </select>
           </div>
           <div>
             <label for='type'>Type: </label>
-            <select name="type" id="typeInput">
-              <option value="Memory: 128MB / CPU: 200MHz">Memory: 128MB / CPU: 200MHz</option>
-              <option value="Memory: 256MB / CPU: 400MHz">Memory: 256MB / CPU: 400MHz</option>
-              <option value="Memory: 512MB / CPU: 800MHz">Memory: 512MB / CPU: 800MHz</option>
-              <option value="Memory: 1024MB / CPU: 1.4GHz">Memory: 1024MB / CPU: 1.4GHz</option>
-              <option value="Memory: 2048MB / CPU: 2.8GHz">Memory: 2048MB / CPU: 2.8GHz</option>
-              <option value="Memory: 4096MB / CPU: 4.8GHz">Memory: 4096MB / CPU: 4.8GHz</option>
-              <option value="Memory: 8192MB / CPU: 4.8MHz">Memory: 8192MB / CPU: 4.8MHz</option>
-              <option value="Memory: 16384MB / CPU: 4.8MHz">Memory: 16384MB / CPU: 4.8MHz</option>
-              <option value="Memory: 32768MB / CPU: 4.8MHz">Memory: 32768MB / CPU: 4.8MHz</option>
+            <select name="type" id="typeInput" value>
+              { 
+                isLoaded && typeOptionsElements
+                // Object.keys(gcfPricingStructure.gcfTypes).map((type, i) => {
+                //   if(i === 0) return <option key={type} value={type} selected="selected">{type}</option>;
+                //   return <option key={type} value={type}>{type}</option>;
+                // })
+              }
             </select>
             <label for='region'>Region: </label>
             <select name='region' id='regionInput'>
-              <option value="asia-east1">asia-east1</option>
-              <option value="asia-east2">asia-east2</option>
-              <option value="asia-northeast1">asia-northeast1</option>
-              <option value="asia-northeast2">asia-northeast2</option>
-              <option value="asia-northeast3">asia-northeast3</option>
-              <option value="asia-south1">asia-south1</option>
-              <option value="asia-south2">asia-south2</option>
-              <option value="asia-southeast1">asia-southeast1</option>
-              <option value="asia-southeast2">asia-southeast2</option>
-              <option value="australia-southeast1">australia-southeast1</option>
-              <option value="australia-southeast2">australia-southeast2</option>
-              <option value="europe-central2">europe-central2</option>
-              <option value="europe-north1">europe-north1</option>
-              <option value="europe-southwest1">europe-southwest1</option>
-              <option value="europe-west1">europe-west1</option>
-              <option value="europe-west10">europe-west10</option>
-              <option value="europe-west12">europe-west12</option>
-              <option value="europe-west2">europe-west2</option>
-              <option value="europe-west3">europe-west3</option>
-              <option value="europe-west4">europe-west4</option>
-              <option value="europe-west6">europe-west6</option>
-              <option value="europe-west8">europe-west8</option>
-              <option value="europe-west9">europe-west9</option>
-              <option value="me-central1">me-central1</option>
-              <option value="me-central2">me-central2</option>
-              <option value="me-west1">me-west1</option>
-              <option value="northamerica-northeast1">northamerica-northeast1</option>
-              <option value="northamerica-northeast2">northamerica-northeast2</option>
-              <option value="southamerica-east1">southamerica-east1</option>
-              <option value="southamerica-west1">southamerica-west1</option>
-              <option value="us-central1">us-central1</option>
-              <option value="us-east1">us-east1</option>
-              <option value="us-east4">us-east4</option>
-              <option value="us-east5">us-east5</option>
-              <option value="us-south1">us-south1</option>
-              <option value="us-west1">us-west1</option>
-              <option value="us-west2">us-west2</option>
-              <option value="us-west3">us-west3</option>
-              <option value="us-west4">us-west4</option>
+              { 
+                isLoaded && regionOptionsElements
+              }
             </select>
             <label for='generation'>GCF Generation: </label>
-            <select name='generation' id='generationInput'>
-              <option value='1'>1</option>
-              <option value='2'>2</option>
+            <select onChange={updateGenerationOptions()} name='generation' id='generationInput'>
+              {
+                isLoaded && generationOptionsElements
+              }
             </select>
           </div>
           <div>
@@ -118,11 +279,15 @@ const ForcastPage = () => {
             <label for='maxIncrements'>Max Increments: </label>
             <input type='number' id='maxIncrementsInput' name='maxIncrements' defaultValue={12}/>
           </div>
-          <button onClick={forecast}>Generate</button>
-        </div>
+          <button onClick={forecastSubmit}>Generate</button>
+        </div> */}
         <Typography paragraph>
           This is your forecast
         </Typography>
+          <div id='legendCheckbox'>
+            <input type="checkbox" id="" name="invocationCosts" value="invocationCosts"></input>
+            <label for="invocationCosts"> Invocation Costs</label>
+          </div>
           <LineChart width={730} height={250} data={dataSeries}
               margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -139,7 +304,7 @@ const ForcastPage = () => {
             <BarChart
               width={500}
               height={300}
-              data={dataSeries}
+              data={filteredDataSeries}
               margin={{
                 top: 20,
                 right: 30,
@@ -162,4 +327,4 @@ const ForcastPage = () => {
   );
 };
 
-export default ForcastPage;
+export default ForecastPage;

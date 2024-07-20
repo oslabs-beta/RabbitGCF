@@ -57,8 +57,8 @@ export default function FunctionTable(props) {
         }
       );
       const data = await response.json();
-      console.log(data);
-      rows = data;
+      console.log(data.funcList);
+      rows = data.funcList;
       setLoaded(true);
     } catch (error) {
       console.log("Error in getFunctionList: ", error);
