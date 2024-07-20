@@ -60,7 +60,7 @@ const MetricsPage = (props) => {
       );
       const data = await response.json();
       // test data not available
-      delete data['getCharacters'];
+      // delete data['getCharacters'];
       console.log("executionCount data: ", data);
       setExecutionCountData(data);
     } catch (error) {
