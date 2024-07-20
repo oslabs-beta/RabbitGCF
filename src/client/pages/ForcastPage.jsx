@@ -3,7 +3,7 @@ import NavBar from '../components/NavBar.jsx';
 import Box from '@mui/material/Box';
 import DrawerHeader from '../components/DrawerHeader.jsx';
 import Typography from '@mui/material/Typography';
-import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { FormControl, InputLabel, Select, MenuItem, TextField, Button } from '@mui/material';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import gcfPricingStructure from '../../../gcfPricingStructure';
 
@@ -17,7 +17,11 @@ const ForcastPage = () => {
   const [generationOptionsElements, setGenerationOptionsElements] = useState(['1','2']);
 
   const [selectedFunc, setSelectedFunc] = useState();
-  const [isSelected, setSelected] = useState(false);
+  const [selectedType, setSelectedType] = useState();
+  const [selectedRegion, setSelectedRegion] = useState();
+  const [selectedGen, setSelectedGen] = useState();
+
+  const [generationOptions, setGenerationOptions] = useState();
 
   const [typeField, setTypeField] = useState();
   const [regionField, setRegionField] = useState();
@@ -40,88 +44,92 @@ const ForcastPage = () => {
         headers: { 'Content-Type': 'application/json' },
       });
       const data = await response.json();
-      // console.log('data ==>', data.configurations);
+      // console.log('data ==>', data.funcList);
 
       setfuncList(data.funcList);
       setConfigurations(data.configurations);
       setSelectedFunc(data.funcList[0]);
-      setSelected(funcList[0]);
-      updateFields();
+      updateFields('Function', data.funcList[0], data.configurations);
       
     } catch (error) {
       console.log('Error in getFunctionList: ', error);
     }
   }
 
-  const loadGCFOptions = () => {
-    setFuncOptionsElements(
-      
-    )    
-
-    setTypeOptionsElements(
-      // typeOptions
-      Object.keys(gcfPricingStructure.gcfTypes).map(type => 
-        <option key={type} value={type}>{type}</option>
-      )
-    )
-
-    setRegionOptionsElements(
-      Object.keys(gcfPricingStructure.gcfRegionTiers).map(region => 
-        <option key={region} value={region}>{region}</option>
-      )
-    )
-
-    setGenerationOptionsElements(
-      [1,2].map(generation => {
-        return <option key={generation} value={generation}>{generation}</option>
-      })
-    )
-  }
-
-  const setDefaultFields = () => {
-    
-  }
-
   useEffect(() => {
-    loadGCFOptions();
-    setDefaultFields();
+    // loadGCFOptions();
+    // setDefaultFields();
     getFunctionList();
     // updateFields();
   }, []);
 
-  const updateGenerationOptions = () => {
-    // const region = document.getElementById('regionInput').value;
-    // console.log('updateGen region ==>',region);
-    // setGenerationOptions(Object.keys(gcfPricingStructure.gcfRegionTiers.region));
-    // console.log('updated generation options ==>', generationOptions);
-  }
-
-  const updateFields = () => {
-    // const type = gcfPricingStructure.typeMapping[configurations[selectedFunc][funcType]];
-    // console.log(type);
-    setTypeField();
-    setRegionField();
-    setGenerationFields();
-
+  const updateFields = (optionType, selectedOption, configs = configurations) => {
+    switch (optionType) {
+      case 'Function':
+        setSelectedType(gcfPricingStructure.typeMapping[configs[selectedOption].funcType]);
+        setSelectedRegion(configs[selectedOption].funcRegion);
+        updateFields('Region', configs[selectedOption].funcRegion);
+        updateFields('GCF-Generation', selectedOption, configs);
+        break;
+      case 'Region':
+        setGenerationOptions(Object.keys(gcfPricingStructure.gcfRegionTiers[selectedOption]));
+        break;
+      case 'GCF-Generation':
+        // console.log('UpdateFields option Generation:', configs[selectedOption]);
+        setSelectedGen(gcfPricingStructure.genMapping[configs[selectedOption].funcGeneration]);
+        break;
+      default:
+        console.log('Error in handleOptionClick in Forecast Page');
+    }
     setLoaded(true);
   }
 
-  const handleFunctionSelect = (e) => {
-    setSelectedFunc(e.target.value);
-    console.log(selectedFunc);
-    setSelected(true);
+  const handleOptionChange = (e) => {
+    // console.log(e.target.name);
+    switch (e.target.name) {
+      case 'Function':
+        console.log('switched Functions');
+        setSelectedFunc(e.target.value);
+        updateFields('Function', e.target.value);
+        break;
+      case 'Type':
+        console.log('switched Types')
+        setSelectedType(e.target.value);
+        break;
+      case 'Region':
+        console.log('switched Region')
+        setSelectedRegion(e.target.value);
+        updateFields('Region', e.target.value);
+        break;
+      case 'GCF-Generation':
+        console.log('switched Generations')
+        setSelectedGen(e.target.value);
+        break;
+      default:
+        console.log('Error in handleOptionClick in Forecast Page');
+    }
+    
   }
 
   const forecastSubmit = () => {
     console.log('forecast button clicked');
     const forecastArgs = {
       // projectId: 'retrieve from State - placeholder',
-      functionName: document.getElementById('functionNameInput').value,
-      type: document.getElementById('typeInput').value,
-      region: document.getElementById('regionInput').value,
-      generation: document.getElementById('generationInput').value,
+      // functionName: document.getElementById('functionNameInput').value,
+      // type: document.getElementById('typeInput').value,
+      // region: document.getElementById('regionInput').value,
+      // generation: document.getElementById('generationInput').value,
+      // increments: Number(document.getElementById('incrementsInput').value),
+      // maxIncrements: Number(document.getElementById('maxIncrementsInput').value),
+
+      functionName: document.getElementsByName('Function')[0].value,
+      type: document.getElementsByName('Type')[0].value,
+      region: document.getElementsByName('Region')[0].value,
+      generation: document.getElementsByName('GCF-Generation')[0].value,
       increments: Number(document.getElementById('incrementsInput').value),
       maxIncrements: Number(document.getElementById('maxIncrementsInput').value),
+
+      
     }
 
     // console.log(forecastArgs);
@@ -156,11 +164,12 @@ const ForcastPage = () => {
               labelId="demo-simple-select-autowidth-label"
               id="demo-simple-select-autowidth"
               value={selectedFunc}
-              onChange={handleFunctionSelect}
+              onChange={handleOptionChange}
               autoWidth
               label="Function"
+              name="Function"
             >
-              { isLoaded && funcList ?
+              { funcList ?
                 funcList.map(el => {
                   return <MenuItem value={el} key={el}>{el}</MenuItem>
                 }) : null
@@ -171,13 +180,14 @@ const ForcastPage = () => {
         <div>
           <FormControl sx={{ m: 'auto', minWidth: 80, maxWidth: 175, display: 'flex'}}>
             <InputLabel id="demo-simple-select-autowidth-label">Type</InputLabel>
-            {selectedFunc && configurations && <Select
+            {selectedFunc && <Select
               labelId="demo-simple-select-autowidth-label"
               id="demo-simple-select-autowidth"
-              value={gcfPricingStructure.typeMapping[configurations[selectedFunc].funcType]}
-              // onChange={handleFunctionSelect}
+              value={selectedType}
+              onChange={handleOptionChange}
               autoWidth
               label="Type"
+              name="Type"
             >
               { configurations ?
                 Object.keys(gcfPricingStructure.gcfTypes).map(el => {
@@ -193,11 +203,11 @@ const ForcastPage = () => {
             {selectedFunc && configurations && <Select
               labelId="demo-simple-select-autowidth-label"
               id="demo-simple-select-autowidth"
-              value={configurations[selectedFunc].funcRegion}
-              // onChange={handleFunctionSelect}
+              value={selectedRegion}
+              onChange={handleOptionChange}
               autoWidth
               label="Region"
-            >
+              name="Region"            >
               { configurations ?
                 Object.keys(gcfPricingStructure.gcfRegionTiers).map(el => {
                   return <MenuItem value={el} key={el}>{el}</MenuItem>
@@ -212,20 +222,25 @@ const ForcastPage = () => {
             {selectedFunc && configurations && <Select
               labelId="demo-simple-select-autowidth-label"
               id="demo-simple-select-autowidth"
-              value={gcfPricingStructure.genMapping[configurations[selectedFunc].funcGeneration]}
-              // onChange={handleFunctionSelect}
+              // value={gcfPricingStructure.genMapping[configurations[selectedFunc].funcGeneration]}
+              value={selectedGen}
+              onChange={handleOptionChange}
               autoWidth
-              label="GCF Generation"
+              label="GCF-Generation"
+              name="GCF-Generation"
             >
               { configurations ?
-                Object.keys(gcfPricingStructure.gcfRegionTiers[configurations[selectedFunc].funcRegion]).map(el => {
+                generationOptions.map(el => {
                   return <MenuItem value={el} key={el}>{el}</MenuItem>
                 }) : null
               }
             </Select>}
           </FormControl>
         </div>
-        <div>
+        <TextField id="incrementsInput" label="Invocation Increments" variant="filled" />
+        <TextField id="maxIncrementsInput" label="Max Increments" variant="filled" />
+        <Button onClick={forecastSubmit} variant="contained">Submit</Button>
+        {/* <div>
           <div>
             <label for='functionName'>Function: </label>
             <select 
@@ -271,7 +286,7 @@ const ForcastPage = () => {
             <input type='number' id='maxIncrementsInput' name='maxIncrements' defaultValue={12}/>
           </div>
           <button onClick={forecastSubmit}>Generate</button>
-        </div>
+        </div> */}
         <Typography paragraph>
           This is your forecast
         </Typography>
