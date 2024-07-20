@@ -14,6 +14,7 @@ router.post('/:projectId',
   forecastController.calcHistorical, 
   forecastController.forecast, 
   (req, res) => {
+    console.log('forecast calculated');
     res.status(200).json(res.locals.forecastDataSeries);
   });
 

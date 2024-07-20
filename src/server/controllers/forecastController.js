@@ -59,6 +59,7 @@ const forecastController = {
     const { functionName } = req.body;
 
     console.log('calcHistorical middleware invoked =========');
+
     // fetch function metrics for the last 30 invocations to get average runtime and memory usage
     try {
       /**
@@ -66,24 +67,33 @@ const forecastController = {
        * ----- REFACTOR WHEN METRICS MIDDLEWARE COMPLETE -----
        * dummyExecTime and dummyMemory arrays should be retrieved from Metrics middleware and replaced below
        */  
+      
       const hstExecutionTimes = res.locals.execution_times.filter(func => {
         if(func.name === functionName) return func;
-      })[0].points;
+      })[0];
 
-      let hstExecutionTimeData = (hstExecutionTimes.length > 30) ? hstExecutionTimes.slice(0, 30) : hstExecutionTimes;
+      if(hstExecutionTimes === undefined) {
+        return next({
+          log: 'Error in forecast middleware - no historical invocation data found',
+          status: 408,
+          message: { err: 'REQUEST TIMEOUT' },
+        });
+      }
 
+      let hstExecutionTimeData = (hstExecutionTimes.points.length > 30) ? hstExecutionTimes.points.slice(0, 30) : hstExecutionTimes.points;
+      
       const totalExecTimeMS = hstExecutionTimeData.reduce((acc, dataPoint) => { return acc + dataPoint.value }, 0);
       const avgExecTimeMS = totalExecTimeMS / hstExecutionTimeData.length;
       res.locals.avgExecTimeMS = avgExecTimeMS / 1000;
       
       // Calc avg historical memory usage
-      // res.locals.user_memory_bytes
+      // console.log(res.locals.user_memory_bytes);
       const hstMemory = res.locals.user_memory_bytes.filter(func => {
         if(func.name === functionName) return func;
       })[0].points;
-
-      let hstMemoryData = (hstMemory.length > 30) ? hstEMemory.slice(0, 30) : hstMemory;
-      // console.log(hstMemoryData);
+      
+      let hstMemoryData = (hstMemory.length > 30) ? hstMemory.slice(0, 30) : hstMemory;
+      
 
       const totalMemoryKB = hstMemoryData.reduce((acc, dataPoint) => { return acc + dataPoint.value }, 0);
       const avgMemoryKB = totalMemoryKB / hstMemoryData.length;
@@ -102,6 +112,7 @@ const forecastController = {
   },
 
   forecast (req, res, next){
+    console.log('forecast controller invoked');
     // REFACTOR: Need to handle minimum number of instances pricing
     const { region, generation, type, increments, maxIncrements } = req.body;
     // ------ Test data -----

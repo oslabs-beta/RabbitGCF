@@ -158,7 +158,7 @@ const ForcastPage = () => {
         <DrawerHeader />
         <h1>Forecast Page</h1>
         <div>
-          <FormControl sx={{ m: 'auto', minWidth: 80, maxWidth: 175, display: 'flex'}}>
+          <FormControl sx={{ m: 'auto', minWidth: 80, maxWidth: 175}}>
             <InputLabel id="demo-simple-select-autowidth-label">Function</InputLabel>
             {selectedFunc && <Select
               labelId="demo-simple-select-autowidth-label"
@@ -176,9 +176,7 @@ const ForcastPage = () => {
               }
             </Select>}
           </FormControl>
-        </div>
-        <div>
-          <FormControl sx={{ m: 'auto', minWidth: 80, maxWidth: 175, display: 'flex'}}>
+          <FormControl sx={{ m: 'auto', minWidth: 80, maxWidth: 175}}>
             <InputLabel id="demo-simple-select-autowidth-label">Type</InputLabel>
             {selectedFunc && <Select
               labelId="demo-simple-select-autowidth-label"
@@ -196,9 +194,7 @@ const ForcastPage = () => {
               }
             </Select>}
           </FormControl>
-        </div>
-        <div>
-          <FormControl sx={{ m: 'auto', minWidth: 80, maxWidth: 175, display: 'flex'}}>
+          <FormControl sx={{ m: 'auto', minWidth: 80, maxWidth: 175}}>
             <InputLabel id="demo-simple-select-autowidth-label">Region</InputLabel>
             {selectedFunc && configurations && <Select
               labelId="demo-simple-select-autowidth-label"
@@ -215,9 +211,7 @@ const ForcastPage = () => {
               }
             </Select>}
           </FormControl>
-        </div>
-        <div>
-          <FormControl sx={{ m: 'auto', minWidth: 80, maxWidth: 175, display: 'flex'}}>
+          <FormControl sx={{ m: 'auto', minWidth: 80, maxWidth: 175}}>
             <InputLabel id="demo-simple-select-autowidth-label">GCF Generation</InputLabel>
             {selectedFunc && configurations && <Select
               labelId="demo-simple-select-autowidth-label"
@@ -237,8 +231,8 @@ const ForcastPage = () => {
             </Select>}
           </FormControl>
         </div>
-        <TextField id="incrementsInput" label="Invocation Increments" variant="filled" />
-        <TextField id="maxIncrementsInput" label="Max Increments" variant="filled" />
+        <TextField id="incrementsInput" label="Invocation Increments" variant="filled" defaultValue={500000}/>
+        <TextField id="maxIncrementsInput" label="Max Increments" variant="filled" defaultValue={5}/>
         <Button onClick={forecastSubmit} variant="contained">Submit</Button>
         {/* <div>
           <div>
