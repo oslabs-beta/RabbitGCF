@@ -49,7 +49,7 @@ app.get('/api/metrics/user_memory_bytes/:projectId', metricsController.userMemor
   return res.status(200).send(res.locals.user_memory_bytes);
 });
 
-app.get('api/metrics/network_egress/:projectId', metricsController.networkEgress, (req, res) => {
+app.get('/api/metrics/network_egress/:projectId', metricsController.networkEgress, (req, res) => {
   return res.status(200).send(res.locals.network_egress);
 });
 
@@ -61,7 +61,7 @@ app.use('/api', apiRouter);
 
 // catch-all route handler
 app.use('*', (req, res) => {
-  res.status(404).send('!!Page not found!!');
+  res.status(404).json('!!Page not found!!');
 });
 
 // global error handler

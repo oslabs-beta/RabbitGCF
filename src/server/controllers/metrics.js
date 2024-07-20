@@ -85,28 +85,25 @@ const metricsController = {
     try {
       const [ timeSeries ] = await monClient.listTimeSeries(request);
       // console.log(timeSeries);
-      const parsedTimeSeries = timeSeries.map(obj => {
+      const parsedTimeSeries = {};
+      timeSeries.forEach(obj => {
         // console.log(obj.metric.labels.status);
         if (obj.metric.labels.status === 'ok') {
-          const newSeries = {};
           const newPoints = [];
           
           obj.points.forEach(point => {
-            const time = new Date(point.interval.startTime.seconds * 1000);
+            const time = new Date(point.interval.startTime.seconds * 1000).toLocaleString();
             newPoints.push({
               timestamp: time,
-              value: point.value.int64Value
+              value: Number(point.value.int64Value)
             });
           });
           
-          newSeries.points = newPoints;
-          newSeries.name = obj.resource.labels.function_name;
-
-          return newSeries;
+          // newSeries.points = newPoints;
+          // newSeries.name = obj.resource.labels.function_name;
+          parsedTimeSeries[obj.resource.labels.function_name] = newPoints;
         };
       });
-      // console.log(`parsed timeSeries: ${parsedTimeSeries}`);
-
       res.locals.execution_count = parsedTimeSeries;
 
       return next();
@@ -139,22 +136,19 @@ const metricsController = {
     try {
       const [ timeSeries ] = await monClient.listTimeSeries(request);
       // console.log(timeSeries);
-      const parsedTimeSeries = timeSeries.map(obj => {
-        const newSeries = {};
+      const parsedTimeSeries = {};
+      timeSeries.forEach(obj => {
         const newPoints = [];
 
         obj.points.forEach(point => {
-          const time = new Date(point.interval.startTime.seconds * 1000);
+          const time = new Date(point.interval.startTime.seconds * 1000).toLocaleString();
           newPoints.push({
             timestamp: time,
             value: point.value.distributionValue.mean / 1000000 // converting from nanoseconds to milliseconds
           });
         });
 
-        newSeries.points = newPoints;
-        newSeries.name = obj.resource.labels.function_name;
-
-        return newSeries;
+        parsedTimeSeries[obj.resource.labels.function_name] = newPoints;
       });
 
       res.locals.execution_times = parsedTimeSeries;
@@ -189,26 +183,23 @@ const metricsController = {
     try {
       const [ timeSeries ] = await monClient.listTimeSeries(request);
       // console.log(timeSeries);
-      const parsedTimeSeries = timeSeries.map(obj => {
-        const newSeries = {};
+      const parsedTimeSeries = {};
+      timeSeries.forEach(obj => {
         const newPoints = [];
         
         obj.points.forEach(point => {
-          const time = new Date(point.interval.startTime.seconds * 1000);
+          const time = new Date(point.interval.startTime.seconds * 1000).toLocaleString();
           newPoints.push({
             timestamp: time,
             value: point.value.distributionValue.mean / 1048576 // converting from bytes to mebibytes
           });
         });
         
-        newSeries.points = newPoints;
-        newSeries.name = obj.resource.labels.function_name;
-        
-        return newSeries;
+        parsedTimeSeries[obj.resource.labels.function_name] = newPoints;
       });
       
       res.locals.user_memory_bytes = parsedTimeSeries;
-      
+
       return next();
     } catch (err) {
       return next(`Could not get user memory bytes data. ERROR: ${err}`);
@@ -238,8 +229,22 @@ const metricsController = {
   
     try {
       const [ timeSeries ] = await monClient.listTimeSeries(request);
+      const parsedTimeSeries = {};
+      timeSeries.forEach(obj => {
+        const newPoints = [];
+        
+        obj.points.forEach(point => {
+          const time = new Date(point.interval.startTime.seconds * 1000).toLocaleString();
+          newPoints.push({
+            timestamp: time,
+            value: point.value.int64Value / 1048576 // converting from bytes to mebibytes
+          });
+        });
+        
+        parsedTimeSeries[obj.resource.labels.function_name] = newPoints;
+      });
       // console.log(timeSeries);
-      res.locals.network_egress = timeSeries;
+      res.locals.network_egress = parsedTimeSeries;
   
       return next();
     } catch (err) {
