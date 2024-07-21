@@ -13,6 +13,7 @@ const metricsController = require('./controllers/metrics');
 const graphController = require('./controllers/graphController');
 // const authController = require('./controllers/authController');
 const bigQuery = require('./controllers/bigQuery');
+const iamController = require('./controllers/iamCredentials');
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, './../client')));
@@ -31,6 +32,10 @@ app.use(express.static(path.join(__dirname, './../client')));
 // app.post('/bigquery/datasets/:projectId', bigQuery.getDatasets, (req, res) => {
 //   return res.status(200).send(res.locals);
 // });
+
+app.use('/', iamController.generateAccessToken, (req, res) => {
+  return res.status(200).send(res.locals.tokenResponse);
+});
 
 app.get('/api/metrics/funcs/:projectId', metricsController.getFuncs, (req, res) => {
   return res.status(200).send(res.locals.funcNames);
