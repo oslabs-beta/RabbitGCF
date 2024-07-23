@@ -3,18 +3,14 @@ import NavBar from '../components/NavBar.jsx';
 import Box from '@mui/material/Box';
 import DrawerHeader from '../components/DrawerHeader.jsx';
 import Typography from '@mui/material/Typography';
-import { FormControl, InputLabel, Select, MenuItem, TextField, Button } from '@mui/material';
+import { FormGroup, FormControl, FormControlLabel, Checkbox, InputLabel, Select, MenuItem, TextField, Button, CircularProgress } from '@mui/material';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import gcfPricingStructure from '../../../gcfPricingStructure';
 
 
 const ForecastPage = () => {
   const [isLoaded, setLoaded] = useState(false);
-  
-  const [funcOptionsElements, setFuncOptionsElements] = useState([]);
-  const [typeOptionsElements, setTypeOptionsElements] = useState([]);
-  const [regionOptionsElements, setRegionOptionsElements] = useState([]);
-  const [generationOptionsElements, setGenerationOptionsElements] = useState(['1','2']);
+  const [fetching, setFetching] = useState(false);
 
   const [selectedFunc, setSelectedFunc] = useState();
   const [selectedType, setSelectedType] = useState();
@@ -22,18 +18,19 @@ const ForecastPage = () => {
   const [selectedGen, setSelectedGen] = useState();
 
   const [generationOptions, setGenerationOptions] = useState();
-
-  const [typeField, setTypeField] = useState();
-  const [regionField, setRegionField] = useState();
-  const [generationFields, setGenerationFields] = useState();
   
-  const [dataSeries, setDataSeries] = useState({});
+  const [dataSeries, setDataSeries] = useState([]);
   const [filteredDataSeries, setFilteredDataSeries] = useState({});
-  
+  const [filteringOptions, setFilteringOptions] = useState({
+    cpuGHzCost: true,
+    cpuRAMCost: true,
+    invocationCost: true,
+    networkBandwidthCost: true,
+    totalCost: true
+  });
   
   const [funcList, setfuncList] = useState([]);
   const [configurations, setConfigurations] = useState();
-  
 
   const projectId = 'refined-engine-424416-p7';
 
@@ -81,7 +78,6 @@ const ForecastPage = () => {
       default:
         console.log('Error in handleOptionClick in Forecast Page');
     }
-    setLoaded(true);
   }
 
   const handleOptionChange = (e) => {
@@ -111,28 +107,32 @@ const ForecastPage = () => {
     
   }
 
+  const filterData = (e) => {
+    filteringOptions[e.target.name] = (filteringOptions[e.target.name]) ? false : true;
+    const filteredData = dataSeries.map(dataPointObj => {
+      const point = {};
+      for (const costType in dataPointObj) {
+        if(filteringOptions[costType]) {
+          point[costType] = dataPointObj[costType];
+        }
+      }
+      return point;
+    })
+    setFilteredDataSeries(filteredData);
+  }
+
   const forecastSubmit = () => {
+    setFetching(true);
     console.log('forecast button clicked');
     const forecastArgs = {
-      // projectId: 'retrieve from State - placeholder',
-      // functionName: document.getElementById('functionNameInput').value,
-      // type: document.getElementById('typeInput').value,
-      // region: document.getElementById('regionInput').value,
-      // generation: document.getElementById('generationInput').value,
-      // increments: Number(document.getElementById('incrementsInput').value),
-      // maxIncrements: Number(document.getElementById('maxIncrementsInput').value),
-
       functionName: document.getElementsByName('Function')[0].value,
       type: document.getElementsByName('Type')[0].value,
       region: document.getElementsByName('Region')[0].value,
       generation: document.getElementsByName('GCF-Generation')[0].value,
       increments: Number(document.getElementById('incrementsInput').value),
-      maxIncrements: Number(document.getElementById('maxIncrementsInput').value),
-
-      
+      maxIncrements: Number(document.getElementById('maxIncrementsInput').value),      
     }
 
-    // console.log(forecastArgs);
     try {
       fetch(`api/forecast/${projectId}`,{
         method: 'POST',
@@ -141,8 +141,18 @@ const ForecastPage = () => {
         },
         body: JSON.stringify(forecastArgs),
       })
-        .then(response => response.json())
         .then(response => {
+          if(response.ok) {
+            setFetching(false);
+            setLoaded(true);
+            return response.json();
+          } else {
+            setLoaded(false);
+            setFetching(false);
+          }
+        })
+        .then(response => {
+          console.log('fetched data ==>',response);
           setDataSeries(response);
           setFilteredDataSeries(response);
         });
@@ -216,7 +226,6 @@ const ForecastPage = () => {
             {selectedFunc && configurations && <Select
               labelId="demo-simple-select-autowidth-label"
               id="demo-simple-select-autowidth"
-              // value={gcfPricingStructure.genMapping[configurations[selectedFunc].funcGeneration]}
               value={selectedGen}
               onChange={handleOptionChange}
               autoWidth
@@ -231,97 +240,71 @@ const ForecastPage = () => {
             </Select>}
           </FormControl>
         </div>
-        <TextField id="incrementsInput" label="Invocation Increments" variant="filled" defaultValue={500000}/>
-        <TextField id="maxIncrementsInput" label="Max Increments" variant="filled" defaultValue={5}/>
-        <Button onClick={forecastSubmit} variant="contained">Submit</Button>
-        {/* <div>
-          <div>
-            <label for='functionName'>Function: </label>
-            <select 
-              onChange={updateFields}
-              name="functionName"
-              id="functionNameInput"
-              value={selectedFunc}>
-              {
-                funcList.map((func, i) => {
-                  return <option key={func} value={func}>{func}</option>;
-                })
-              }
-            </select>
-          </div>
-          <div>
-            <label for='type'>Type: </label>
-            <select name="type" id="typeInput" value>
-              { 
-                isLoaded && typeOptionsElements
-                // Object.keys(gcfPricingStructure.gcfTypes).map((type, i) => {
-                //   if(i === 0) return <option key={type} value={type} selected="selected">{type}</option>;
-                //   return <option key={type} value={type}>{type}</option>;
-                // })
-              }
-            </select>
-            <label for='region'>Region: </label>
-            <select name='region' id='regionInput'>
-              { 
-                isLoaded && regionOptionsElements
-              }
-            </select>
-            <label for='generation'>GCF Generation: </label>
-            <select onChange={updateGenerationOptions()} name='generation' id='generationInput'>
-              {
-                isLoaded && generationOptionsElements
-              }
-            </select>
-          </div>
-          <div>
-            <label for='increments'>Invocation Increments: </label>
-            <input type='number' id='incrementsInput' name='increments' defaultValue={500000}/>
-            <label for='maxIncrements'>Max Increments: </label>
-            <input type='number' id='maxIncrementsInput' name='maxIncrements' defaultValue={12}/>
-          </div>
-          <button onClick={forecastSubmit}>Generate</button>
-        </div> */}
+        <div>
+          <TextField id="incrementsInput" label="Invocation Increments" variant="filled" defaultValue={500000}/>
+          <TextField id="maxIncrementsInput" label="Max Increments" variant="filled" defaultValue={5}/>
+          <Button onClick={forecastSubmit} variant="contained">Submit</Button>
+        </div>
         <Typography paragraph>
           This is your forecast
         </Typography>
-          <div id='legendCheckbox'>
-            <input type="checkbox" id="" name="invocationCosts" value="invocationCosts"></input>
-            <label for="invocationCosts"> Invocation Costs</label>
+          <div id='legendCheckbox'> 
+            <FormGroup sx={{ display: "inline-flex", flexDirection: "row"}}>
+              <FormControlLabel control={<Checkbox name='invocationCost' defaultChecked onChange={filterData}/>} label="Invocation Costs" />
+              <FormControlLabel control={<Checkbox name='cpuRAMCost' defaultChecked onChange={filterData}/>} label="CPU RAM Costs" />
+              <FormControlLabel control={<Checkbox name='cpuGHzCost' defaultChecked onChange={filterData}/>} label="CPU GHz Costs" />
+              <FormControlLabel control={<Checkbox name='networkBandwidthCost' defaultChecked onChange={filterData}/>} label="Network Bandwidth Costs" />
+              <FormControlLabel control={<Checkbox name='totalCost' defaultChecked onChange={filterData}/>} label="Total Costs" />
+            </FormGroup>
           </div>
-          <LineChart width={730} height={250} data={dataSeries}
-              margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="invocations" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Line type="monotone" dataKey="invocationCost" stroke="#8884d8" />
-              <Line type="monotone" dataKey="cpuRAMCost" stroke="#82ca9d" />
-              <Line type="monotone" dataKey="cpuGHzCost" stroke="#38E4FF" />
-              <Line type="monotone" dataKey="networkBandwidthCost" stroke="#900C3F" />
-              <Line type="monotone" dataKey="totalCost" stroke="#B138FF" />
-            </LineChart>
-            <BarChart
-              width={500}
-              height={300}
-              data={filteredDataSeries}
-              margin={{
-                top: 20,
-                right: 30,
-                left: 20,
-                bottom: 5,
-              }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="invocations" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar type="monotone" dataKey="invocationCost" fill="#8884d8" />
-              <Bar type="monotone" dataKey="cpuRAMCost" fill="#82ca9d" />
-              <Bar type="monotone" dataKey="cpuGHzCost" fill="#38E4FF" />
-              <Bar type="monotone" dataKey="networkBandwidthCost" fill="#900C3F" />
-            </BarChart>
+          {isLoaded ? (<LineChart width={730} height={250} data={filteredDataSeries}
+            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="invocations" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Line type="monotone" dataKey="invocationCost" stroke="#8884d8" />
+            <Line type="monotone" dataKey="cpuRAMCost" stroke="#82ca9d" />
+            <Line type="monotone" dataKey="cpuGHzCost" stroke="#38E4FF" />
+            <Line type="monotone" dataKey="networkBandwidthCost" stroke="#900C3F" />
+            <Line type="monotone" dataKey="totalCost" stroke="#B138FF" />
+          </LineChart>) :
+          fetching ? (
+            <Box
+            sx={{
+            width: "auto",
+            height: 400,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            }}>
+            <Typography
+              style={{
+                display: "flex",
+                justifyContent: "center",
+              }}>
+              <CircularProgress />
+            </Typography>
+          </Box>) :
+          (<Box
+            sx={{
+            width: "80%",
+            height: 400,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "#FFCDD2",
+            }}>
+            <Typography
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                color: "red",
+              }}>
+              Data not available
+            </Typography>
+          </Box>)}
       </Box>
     </div>
   );
