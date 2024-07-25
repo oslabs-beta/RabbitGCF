@@ -49,6 +49,7 @@ const metricsController = {
     // console.log(`funcNames: ${funcNames}`);
     const { projectId } = req.params;
     // console.log(`projectId: ${projectId}`);
+    const { timeRange } = req.query; // added this line
 
     const execution_count = `metric.type="cloudfunctions.googleapis.com/function/execution_count" AND resource.labels.project_id="${projectId}"`;
     const request = {
@@ -57,7 +58,7 @@ const metricsController = {
       interval: {
         startTime: {
           // how far back in minutes the results go
-          seconds: Date.now() / 1000 - 60 * 43200
+          seconds: Date.now() / 1000 - 60 * timeRange // changed time for timeRange which will be a query param
         },
         endTime: {
           seconds: Date.now() / 1000
@@ -78,17 +79,19 @@ const metricsController = {
             const time = new Date(point.interval.startTime.seconds * 1000);
             newPoints.push({
               timestamp: time,
-              value: point.value.int64Value
+              value: Number(point.value.int64Value)
             });
           });
           
-          newSeries.points = newPoints;
+          newSeries.points = newPoints.sort((a, b) => a.timestamp - b.timestamp);
+          // newSeries.points.map((el) => el.timestamp = el.timestamp.toLocaleString());
           newSeries.name = obj.resource.labels.function_name;
+          // console.log("new Series exec count => ", newSeries);
 
           return newSeries;
         };
       });
-      // console.log(`parsed timeSeries: ${parsedTimeSeries}`);
+
 
       res.locals.execution_count = parsedTimeSeries;
 
@@ -103,6 +106,7 @@ const metricsController = {
     // console.log(`funcNames: ${funcNames}`);
     const { projectId } = req.params;
     // console.log(`projectId: ${projectId}`);
+    const { timeRange } = req.query; // adding timeRange in our fetch reqs
 
     const execution_times = `metric.type="cloudfunctions.googleapis.com/function/execution_times" AND resource.labels.project_id="${projectId}"`;
     const request = {
@@ -111,7 +115,7 @@ const metricsController = {
       interval: {
         startTime: {
           // how far back in minutes the results go
-          seconds: Date.now() / 1000 - 60 * 43200
+          seconds: Date.now() / 1000 - 60 * timeRange // added timeRange
         },
         endTime: {
           seconds: Date.now() / 1000
@@ -130,15 +134,18 @@ const metricsController = {
           const time = new Date(point.interval.startTime.seconds * 1000);
           newPoints.push({
             timestamp: time,
-            value: point.value.distributionValue.mean / 1000000 // converting from nanoseconds to milliseconds
+            value: Math.round(point.value.distributionValue.mean / 1000000) // converting from nanoseconds to milliseconds
           });
         });
 
-        newSeries.points = newPoints;
+        newSeries.points = newPoints.sort((a, b) => a.timestamp - b.timestamp);
+        // newSeries.points.map((el) => el.timestamp = el.timestamp.toLocaleString());
+
         newSeries.name = obj.resource.labels.function_name;
 
         return newSeries;
       });
+
 
       res.locals.execution_times = parsedTimeSeries;
 
@@ -153,6 +160,7 @@ const metricsController = {
     // console.log(`funcNames: ${funcNames}`);
     const { projectId } = req.params;
     // console.log(`projectId: ${projectId}`);
+    const { timeRange } = req.query; // adding timeRange
     
     const user_memory_bytes = `metric.type="cloudfunctions.googleapis.com/function/user_memory_bytes" AND resource.labels.project_id="${projectId}"`;
     const request = {
@@ -161,12 +169,18 @@ const metricsController = {
       interval: {
         startTime: {
           // how far back in minutes the results go
-          seconds: Date.now() / 1000 - 60 * 43200
+          seconds: Date.now() / 1000 - 60 * timeRange // adding timeRange
         },
         endTime: {
           seconds: Date.now() / 1000
         }
       }
+    };
+    
+    const normalizeTimestamp = (timestamp) => {
+      const date = new Date(timestamp);
+      date.setSeconds(0, 0);
+      return date.toISOString();
     };
     
     try {
@@ -179,15 +193,23 @@ const metricsController = {
         obj.points.forEach(point => {
           const time = new Date(point.interval.startTime.seconds * 1000);
           newPoints.push({
-            timestamp: time,
-            value: point.value.distributionValue.mean / 1048576 // converting from bytes to mebibytes
+            timestamp: normalizeTimestamp(time),
+            value: Math.round(point.value.distributionValue.mean / 1048576 * 100) / 100 // converting from bytes to mebibytes
           });
         });
         
-        newSeries.points = newPoints;
+        newSeries.points = newPoints.sort((a, b) => a.timestamp - b.timestamp);
+        // newSeries.points.map((el) => el.timestamp = el.timestamp.toLocaleString());
+
+
         newSeries.name = obj.resource.labels.function_name;
         
         return newSeries;
+      });
+
+      parsedTimeSeries.forEach(series => {
+        console.log("Parsed Time Series:");
+        console.dir(series, { depth: null }); // Adjust depth as needed
       });
       
       res.locals.user_memory_bytes = parsedTimeSeries;
@@ -203,6 +225,8 @@ const metricsController = {
     // console.log(`funcNames: ${funcNames}`);
     const { projectId } = req.params;
     // console.log(`projectId: ${projectId}`);
+    const { timeRange } = req.query; // adding timeRange / at this level, it works
+    console.log("timerange => ", timeRange);
   
     const network_egress = `metric.type="cloudfunctions.googleapis.com/function/network_egress" AND resource.labels.project_id="${projectId}"`;
     const request = {
@@ -211,7 +235,7 @@ const metricsController = {
       interval: {
         startTime: {
           // how far back in minutes the results go
-          seconds: Date.now() / 1000 - 60 * 43200
+          seconds: Date.now() / 1000 - 60 * timeRange // adding timeRange
         },
         endTime: {
           seconds: Date.now() / 1000
@@ -229,17 +253,23 @@ const metricsController = {
           const time = new Date(point.interval.startTime.seconds * 1000);
           newPoints.push({
             timestamp: time,
-            value: point.value.int64Value / 1048576 // converting from bytes to mebibytes
+            value: Math.round(point.value.int64Value / 1048576 * 100) / 100 // converting from bytes to mebibytes
           });
         });
         
-        newSeries.points = newPoints;
+        newSeries.points = newPoints.sort((a, b) => a.timestamp - b.timestamp);
+        // newSeries.points.map((el) => el.timestamp = el.timestamp.toLocaleString());
+
         newSeries.name = obj.resource.labels.function_name;
         
         return newSeries;
       });
       // console.log(timeSeries);
       res.locals.network_egress = parsedTimeSeries;
+      parsedTimeSeries.forEach(series => {
+        console.log("Parsed Time Series:");
+        console.dir(series, { depth: null }); // Adjust depth as needed
+      });
   
       return next();
     } catch (err) {
