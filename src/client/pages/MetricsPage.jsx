@@ -17,15 +17,32 @@ const MetricsPage = (props) => {
   const [executionTimeData, setExecutionTimeData] = useState([]);
   const [memoryData, setMemoryData] = useState([]);
   const [networkData, setNetworkData] = useState([]);
+  const [selected, setSelected] = useState(false);
 
   // default function to render
   // const [functionName, setFunctionName] = useState("");
 
   const [skeleton, setSkeleton] = useState(true);
+  const [timeRange, setTimeRange] = useState(60);
+
+  const selectTimeframe = [ // adding timeframes & minutes
+    { label: "1 hour", value: 60},
+    { label: "12 hours", value: 720},
+    { label: "1 day", value: 1440},
+    { label: "2 days", value: 2880},
+    { label: "7 days", value: 10080 },
+    { label: "14 days", value: 20160 },
+    { label: "30 days", value: 43200 }
+  ];
 
   function handleFunctionSelect(e) {
     props.setFunctionName(e.target.value);
     console.log(props.functionName);
+  }
+
+  function handleTimeRangeSelect(e) { // adding this functionality
+    setTimeRange(e.target.value);
+    setSelected(true);
   }
 
   const projectId = "refined-engine-424416-p7";
@@ -46,13 +63,31 @@ const MetricsPage = (props) => {
     } catch (error) {
       console.log("Error in getFunctionList: ", error);
     }
-  };
+  }
+  
+  // useEffect(() => {
+  //   getFunctionList();
+  // }, [])
+
+  // useEffect(() => { // added this useEffect
+  //   if (selected) {
+  //     fetchMetrics();
+  //   }
+  // }, [selected, timeRange]);
+
+  // const fetchMetrics = () => {
+  //   getExecutionCounts();
+  //   getExecutionTimes();
+  //   getMemoryBytes();
+  //   getNetworkEgress();
+  //   setSelected(false);
+  // }
 
   const getExecutionCounts = async () => {
     try {
       console.log("execution count reload");
       const response = await fetch(
-        `/api/metrics/execution_count/${projectId}`,
+        `/api/metrics/execution_count/${projectId}?timeRange=${timeRange}`,
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
@@ -63,6 +98,7 @@ const MetricsPage = (props) => {
       // delete data['getCharacters'];
       console.log("executionCount data: ", data);
       setExecutionCountData(data);
+
     } catch (error) {
       console.log("Error in getExecutionCounts: ", error);
     }
@@ -71,7 +107,7 @@ const MetricsPage = (props) => {
   const getExecutionTimes = async () => {
     try {
       const response = await fetch(
-        `/api/metrics/execution_times/${projectId}`,
+        `/api/metrics/execution_times/${projectId}?timeRange=${timeRange}`,
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
@@ -88,7 +124,7 @@ const MetricsPage = (props) => {
   const getMemoryBytes = async () => {
     try {
       const response = await fetch(
-        `/api/metrics/user_memory_bytes/${projectId}`,
+        `/api/metrics/user_memory_bytes/${projectId}?timeRange=${timeRange}`,
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
@@ -105,7 +141,7 @@ const MetricsPage = (props) => {
   const getNetworkEgress = async () => {
     try {
       const response = await fetch(
-        `/api/metrics/network_egress/${projectId}`, 
+        `/api/metrics/network_egress/${projectId}?timeRange=${timeRange}`, 
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
@@ -119,7 +155,6 @@ const MetricsPage = (props) => {
     }
   };
 
-  // To Do: add dependency based on changing time range
   useEffect(() => {
     getFunctionList();
     getExecutionCounts();
@@ -127,7 +162,8 @@ const MetricsPage = (props) => {
     getMemoryBytes();
     getNetworkEgress();
     setSkeleton(false);
-  }, []);
+    setSelected(false);
+  }, [timeRange]);
 
   return (
     <div>
@@ -163,12 +199,32 @@ const MetricsPage = (props) => {
               )}
             </Select>
           </FormControl>
+          <FormControl sx={{ m: 'auto', minWidth: 80, maxWidth: 175, display: 'flex'}}>
+            <InputLabel id="demo-simple-select-autowidth-label">Timerange</InputLabel>
+            <Select
+              labelId="demo-simple-select-autowidth-label"
+              id="demo-simple-select-autowidth"
+              value={timeRange}
+              onChange={handleTimeRangeSelect}
+              minWidth={80}
+              maxWidth={175}
+              label="Timerange"
+            >
+              { 
+              selectTimeframe.map(el => (
+                  <MenuItem value={el.value} key={el.value}>{el.label}</MenuItem>
+              ))
+              }
+            </Select>
+          </FormControl>
         </div>
-
-        <Typography paragraph>These are your metrics:</Typography>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
-          <div style={{ marginBottom: "20px" }}>
-            <Typography style={{ display: "flex", justifyContent: "center" }}>
+        <Typography paragraph>
+          These are your metrics:
+        </Typography>
+        {/* <div className='metrics-container'> */}
+        <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr'}}>
+          <div style={{marginBottom: '20px'}}>
+            <Typography style={{display: 'flex', justifyContent: 'center'}}>
               Execution Count:
             </Typography>
             {skeleton ? (
@@ -195,6 +251,7 @@ const MetricsPage = (props) => {
                     dataKey="value"
                     statusKey="status"
                     label="Execution Count"
+              timeRange={timeRange}
                   />
                 ) : (
                   <Box
@@ -249,7 +306,9 @@ const MetricsPage = (props) => {
                     dataKey="value"
                     statusKey="status"
                     label="Execution Time (ms)"
-                  />
+                    timeRange={timeRange}
+
+            />
                 ) : (
                   <Box
                     sx={{
@@ -303,7 +362,9 @@ const MetricsPage = (props) => {
                     dataKey="value"
                     statusKey="status"
                     label="Memory (MB)"
-                  />
+                  timeRange={timeRange}
+
+              />
                 ) : (
                   <Box
                     sx={{
@@ -357,7 +418,9 @@ const MetricsPage = (props) => {
                     dataKey="value"
                     statusKey="status"
                     label="Network Egress (MB)"
-                  />
+                  timeRange={timeRange}
+
+              />
                 ) : (
                   <Box
                     sx={{

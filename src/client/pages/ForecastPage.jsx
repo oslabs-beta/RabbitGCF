@@ -9,7 +9,7 @@ import gcfPricingStructure from '../../../gcfPricingStructure';
 import DropDownField from '../components/DropDownField.jsx';
 
 
-const ForecastPage = () => {
+const ForecastPage = (props) => {
   const [isLoaded, setLoaded] = useState(false);
   const [skeleton, setSkeleton] = useState(true);
   const [fetching, setFetching] = useState(false);
@@ -24,7 +24,7 @@ const ForecastPage = () => {
   const [selectedRegion, setSelectedRegion] = useState();
   const [selectedGen, setSelectedGen] = useState();
 
-  const [generationOptions, setGenerationOptions] = useState();
+  const [generationOptions, setGenerationOptions] = useState([]);
   
   const [dataSeries, setDataSeries] = useState([]);
   const [filteredDataSeries, setFilteredDataSeries] = useState({});
@@ -52,10 +52,15 @@ const ForecastPage = () => {
 
       setfuncList(data.funcList);
       setConfigurations(data.configurations);
-      setSelectedFunc(data.funcList[0]);
-      updateFields('Function', data.funcList[0], data.configurations);
+      if (data.funcList[0] && props.functionName === '') {
+        props.setFunctionName(data.funcList[0]);
+        setSelectedFunc(data.funcList[0]);
+        updateFields('Function', data.funcList[0], data.configurations);
+      } else if(props.functionName !== '') {
+        setSelectedFunc(props.functionName);
+        updateFields('Function', props.functionName, data.configurations);
+      }
       setSkeleton(false);
-      
     } catch (error) {
       console.log('Error in getFunctionList: ', error);
     }
@@ -88,6 +93,7 @@ const ForecastPage = () => {
     switch (e.target.name) {
       case 'Function':
         console.log('switched Functions');
+        props.setFunctionName(e.target.name);
         setSelectedFunc(e.target.value);
         updateFields('Function', e.target.value);
         break;
