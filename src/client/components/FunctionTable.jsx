@@ -42,7 +42,7 @@ export default function FunctionTable(props) {
 
   const handleForcastClick = (e) => {
     props.setFunctionName(e.target.value);
-    navigate("/forcast");
+    navigate("/forecast");
   };
 
   const projectId = "refined-engine-424416-p7";

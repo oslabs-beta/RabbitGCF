@@ -107,8 +107,8 @@ export default function NavBar() {
     navigate('/metrics');
   }
 
-  function forcastClick() {
-    console.log('forcast clicked')
+  function forecastClick() {
+    console.log('forecast clicked')
     navigate('/forecast');
   }
 
@@ -190,7 +190,7 @@ export default function NavBar() {
               >
                 <DataObjectIcon />
               </ListItemIcon>
-              <ListItemText primary={'Metrics'} sx={{ opacity: open ? 1 : 0 }} />
+              <ListItemText primary={'Functions'} sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
           </ListItem>
           <ListItem key={'Metrics'} disablePadding sx={{ display: 'block' }}>
@@ -214,9 +214,9 @@ export default function NavBar() {
               <ListItemText primary={'Metrics'} sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
           </ListItem>
-          <ListItem key={'Forcast'} disablePadding sx={{ display: 'block' }}>
+          <ListItem key={'Forecast'} disablePadding sx={{ display: 'block' }}>
             <ListItemButton
-              onClick={forcastClick}
+              onClick={forecastClick}
               sx={{
                 minHeight: 48,
                 justifyContent: open ? 'initial' : 'center',
@@ -232,7 +232,7 @@ export default function NavBar() {
               >
                 <InsightsIcon />
               </ListItemIcon>
-              <ListItemText primary={'Forcast'} sx={{ opacity: open ? 1 : 0 }} />
+              <ListItemText primary={'Forecast'} sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
           </ListItem>
         </List>
