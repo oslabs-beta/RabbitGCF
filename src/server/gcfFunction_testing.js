@@ -1,3 +1,5 @@
+const rabbitFunctions = ['addCharacters', 'getSpecies', 'deleteCharacter', 'getHomeworld', 'getFilm', 'getCharacters', 'updateCharacters'];
+
 function invoke () {
   console.log('=========== Invocations STARTED ===========')
   const invocations = Math.floor(Math.random() * 30) + 20;
@@ -8,7 +10,9 @@ function invoke () {
       clearInterval(repeat);
       console.log('=========== Invocations COMPLETED ===========');
     }
-    fetch('https://us-central1-refined-engine-424416-p7.cloudfunctions.net/getCharacters');
+    for (const gcfFunc of rabbitFunctions)
+    // fetch('https://us-central1-refined-engine-424416-p7.cloudfunctions.net/getCharacters');
+    fetch(`https://us-central1-refined-engine-424416-p7.cloudfunctions.net/${gcfFunc}`);
       // .then(response => console.log(response.ok));
     count++;
   }, 1000)
