@@ -131,7 +131,6 @@ const ForecastPage = () => {
         console.log('test');
         setIncrementsInput(e.target.value);
         (isNaN(e.target.value)) ? setInvalidIncrements('Must be a number') : setInvalidIncrements('');
-        // (typeof e.target.value !== 'number') ? setInvalidIncrements('Must be a number') : setInvalidIncrements('');
         break;
       case 'maxIncInput':
         console.log('test');
