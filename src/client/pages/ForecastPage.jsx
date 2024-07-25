@@ -8,7 +8,7 @@ import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, L
 import gcfPricingStructure from '../../../gcfPricingStructure';
 
 
-const ForecastPage = () => {
+const ForecastPage = (props) => {
   const [isLoaded, setLoaded] = useState(false);
   const [fetching, setFetching] = useState(false);
 
@@ -17,7 +17,7 @@ const ForecastPage = () => {
   const [selectedRegion, setSelectedRegion] = useState();
   const [selectedGen, setSelectedGen] = useState();
 
-  const [generationOptions, setGenerationOptions] = useState();
+  const [generationOptions, setGenerationOptions] = useState([]);
   
   const [dataSeries, setDataSeries] = useState([]);
   const [filteredDataSeries, setFilteredDataSeries] = useState({});
@@ -45,8 +45,14 @@ const ForecastPage = () => {
 
       setfuncList(data.funcList);
       setConfigurations(data.configurations);
-      setSelectedFunc(data.funcList[0]);
-      updateFields('Function', data.funcList[0], data.configurations);
+      if (data.funcList[0] && props.functionName === '') {
+        props.setFunctionName(data.funcList[0]);
+        setSelectedFunc(data.funcList[0]);
+        updateFields('Function', data.funcList[0], data.configurations);
+      } else if(props.functionName !== '') {
+        setSelectedFunc(props.functionName);
+        updateFields('Function', props.functionName, data.configurations);
+      }
       
     } catch (error) {
       console.log('Error in getFunctionList: ', error);
@@ -85,6 +91,7 @@ const ForecastPage = () => {
     switch (e.target.name) {
       case 'Function':
         console.log('switched Functions');
+        props.setFunctionName(e.target.value);
         setSelectedFunc(e.target.value);
         updateFields('Function', e.target.value);
         break;
@@ -213,7 +220,8 @@ const ForecastPage = () => {
               onChange={handleOptionChange}
               autoWidth
               label="Region"
-              name="Region"            >
+              name="Region"            
+            >
               { configurations ?
                 Object.keys(gcfPricingStructure.gcfRegionTiers).map(el => {
                   return <MenuItem value={el} key={el}>{el}</MenuItem>
@@ -245,9 +253,6 @@ const ForecastPage = () => {
           <TextField id="maxIncrementsInput" label="Max Increments" variant="filled" defaultValue={5}/>
           <Button onClick={forecastSubmit} variant="contained">Submit</Button>
         </div>
-        <Typography paragraph>
-          This is your forecast
-        </Typography>
           <div id='legendCheckbox'> 
             <FormGroup sx={{ display: "inline-flex", flexDirection: "row"}}>
               <FormControlLabel control={<Checkbox name='invocationCost' defaultChecked onChange={filterData}/>} label="Invocation Costs" />
@@ -257,7 +262,7 @@ const ForecastPage = () => {
               <FormControlLabel control={<Checkbox name='totalCost' defaultChecked onChange={filterData}/>} label="Total Costs" />
             </FormGroup>
           </div>
-          {isLoaded ? (<LineChart width={730} height={250} data={filteredDataSeries}
+          {isLoaded ? (<LineChart width={730} height={400} data={filteredDataSeries}
             margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="invocations" />
@@ -289,7 +294,7 @@ const ForecastPage = () => {
           </Box>) :
           (<Box
             sx={{
-            width: "80%",
+            width: 730,
             height: 400,
             display: "flex",
             justifyContent: "center",
