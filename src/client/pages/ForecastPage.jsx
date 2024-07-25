@@ -85,7 +85,6 @@ const ForecastPage = () => {
   }
 
   const handleOptionChange = (e) => {
-    // console.log(e.target.name);
     switch (e.target.name) {
       case 'Function':
         console.log('switched Functions');
@@ -125,15 +124,12 @@ const ForecastPage = () => {
   }
 
   const validateInput = (e) => {
-    console.log('validateInput target ==> ', e.target.id)
     switch (e.target.id) {
       case 'incrementsInput':
-        console.log('test');
         setIncrementsInput(e.target.value);
         (isNaN(e.target.value)) ? setInvalidIncrements('Must be a number') : setInvalidIncrements('');
         break;
       case 'maxIncInput':
-        console.log('test');
         setMaxIncInput(e.target.value);
         (isNaN(e.target.value)) ? setInvalidMaxInc('Must be a number') : setInvalidMaxInc('');
         break;
