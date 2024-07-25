@@ -288,16 +288,26 @@ class GraphComponent extends PureComponent {
       refAreaRight: '',
       zoomedData: null,
       disableAnimation: false,
+      // filledData: [],
     };
   }
 
-  componentDidMount() {
-    // Fill data gaps when the component mounts
-    const { data, timeRange } = this.props;
-    const interval = this.getIntervalForTimeRange(timeRange);
-    const filledData = this.fillDataGaps(data, interval);
-    this.setState({ filledData });
-  }
+  // componentDidMount() {
+  //   // Fill data gaps when the component mounts
+  //   const { data, timeRange } = this.props;
+  //   const interval = 1;
+  //   const filledData = this.fillDataGaps(data, interval);
+  //   this.setState({ filledData });
+  // }
+
+  // componentDidUpdate(prevProps) {
+  //   if (prevProps.data !== this.props.data || prevProps.timeRange !== this.props.timeRange) {
+  //     const { data, timeRange } = this.props;
+  //     const interval = 1;
+  //     const filledData = this.fillDataGaps(data, interval);
+  //     this.setState({ filledData });
+  //   }
+  // }
 
   // Helper function to normalize timestamps
   normalizeTimestamp = (timestamp) => {
@@ -336,7 +346,6 @@ class GraphComponent extends PureComponent {
     );
   
     if (points.length === 0) {
-      console.warn('No data points found');
       return [];
     }
   
@@ -350,7 +359,7 @@ class GraphComponent extends PureComponent {
   
     const timeIntervals = this.generateTimeIntervals(start, end, interval);
   
-    const maxIntervals = 10000; // Set a limit to avoid performance issues
+    // const maxIntervals = 10000; // Set a limit to avoid performance issues
     // if (timeIntervals.length > maxIntervals) {
     //   console.warn(`Too many intervals generated: ${timeIntervals.length}`);
     //   return [];
@@ -361,13 +370,13 @@ class GraphComponent extends PureComponent {
       return existingPoint || { timestamp: time, value: 0 };
     });
   
-    console.log('Filled data:', filledData);
+    // console.log('Filled data:', filledData);
     return filledData;
   };
 
-  // Get interval based on time range
+  // trying to figure out more normal ticks
   getIntervalForTimeRange = (timeRange) => {
-    console.log('Calculating interval for timeRange:', timeRange);
+    // console.log('Calculating interval for timeRange:', timeRange);
     if (timeRange <= 60) { // Last hour
       return 5; // 5-minute intervals
     } else if (timeRange <= 1440) { // Last day
@@ -382,6 +391,7 @@ class GraphComponent extends PureComponent {
   zoom = () => {
     let { refAreaLeft, refAreaRight } = this.state;
     const { filledData } = this.state;
+    console.log("filledData => ", filledData);
 
     if (refAreaLeft === refAreaRight || refAreaRight === '') {
       this.setState({ refAreaLeft: '', refAreaRight: '' });
@@ -417,26 +427,26 @@ class GraphComponent extends PureComponent {
 
   render() {
     const { data, dataKey, label, timeRange } = this.props;
-    const { refAreaLeft, refAreaRight, zoomedData, disableAnimation } = this.state;
+    const { refAreaLeft, refAreaRight, zoomedData, disableAnimation, filledData } = this.state;
 
     console.log('Current data:', data);
     console.log('Time range:', timeRange);
 
-    if (!data || data.length === 0) {
-      console.error('Data is undefined or empty', data);
-      return <div>No data available</div>;
-    }
+    // if (!data || data.length === 0) {
+    //   console.error('Data is undefined or empty', data);
+    //   return <div>No data available</div>;
+    // }
 
     const allDataPoints = data.flatMap(d => d.points || 
       (d.timestamp && d.value ? [{ timestamp: d.timestamp, value: d.value }] : [])
     );
 
-    console.log('All data points:', allDataPoints);
+    // console.log('All data points:', allDataPoints);
 
-    if (allDataPoints.length === 0) {
-      console.warn('No data points found');
-      return <div>No data points available</div>;
-    }
+    // if (allDataPoints.length === 0) {
+    //   console.warn('No data points found');
+    //   return <div>No data points available</div>;
+    // }
 
     const interval = 1;
     // console.log('Interval:', interval);
@@ -447,7 +457,7 @@ class GraphComponent extends PureComponent {
     }));
 
     // console.log('Filled chart data:', filledChartData);
-
+    // formatting for time and days, but should format for more "round" times
     const formatXAxis = (tickItem) => {
       const date = new Date(tickItem);
       if (timeRange <= 60) { // Last hour
@@ -457,25 +467,25 @@ class GraphComponent extends PureComponent {
       } else if (timeRange <= 43200) { // Last month
         return date.toLocaleDateString();
       } else { // Longer periods
-        return date.toLocaleDateString(); // Adjust as needed for longer periods
+        return date.toLocaleDateString();
       }
     };
 
     const endTime = Date.now();
     const startTime = endTime - timeRange * 60 * 1000;
-    console.log('Filled chart data:', filledChartData.map(d => ({
-      ...d,
-      timestamp: new Date(d.timestamp).toLocaleString()
-    })));
+    // console.log('Filled chart data:', filledChartData.map(d => ({
+    //   ...d,
+    //   timestamp: new Date(d.timestamp).toLocaleString()
+    // })));
     
-    console.log('Start Time:', new Date(startTime).toLocaleString());
-    console.log('End Time:', new Date(endTime).toLocaleString());
+    // console.log('Start Time:', new Date(startTime).toLocaleString());
+    // console.log('End Time:', new Date(endTime).toLocaleString());
     
-    console.log('Interval:', interval);
-    console.log('Current data:', data.map(d => ({
-      timestamp: new Date(d.timestamp).toLocaleString(),
-      value: d.value
-    })));
+    // console.log('Interval:', interval);
+    // console.log('Current data:', data.map(d => ({
+    //   timestamp: new Date(d.timestamp).toLocaleString(),
+    //   value: d.value
+    // })));
     
     return (
       <div className="chart-container" style={{ width: '90%', height: 400, marginBottom: '40px' }}>

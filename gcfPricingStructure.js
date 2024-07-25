@@ -154,16 +154,33 @@ gcfPricingStructure.gcfRegionTiers = {
   }
 };
 
-gcfPricingStructure.gfcTypes = {
+gcfPricingStructure.gcfTypes = {
   "Memory: 128MB / CPU: 200MHz": { mb: 128, mhz: 200 },
   "Memory: 256MB / CPU: 400MHz": { mb: 256, mhz: 400 },
   "Memory: 512MB / CPU: 800MHz": { mb: 512, mhz: 800 },
-  "Memory: 1024MB / CPU: 1.4GHz": { mb: 1024, mhz: 1400 },
-  "Memory: 2048MB / CPU: 2.8GHz": { mb: 2048, mhz: 2800 },
-  "Memory: 4096MB / CPU: 4.8GHz": { mb: 4096, mhz: 4800 },
-  "Memory: 8192MB / CPU: 4.8MHz": { mb: 8192, mhz: 4800 },
-  "Memory: 16384MB / CPU: 4.8MHz": { mb: 16384, mhz: 4800 },
-  "Memory: 32768MB / CPU: 4.8MHz": { mb: 32768, mhz: 4800 }
+  "Memory: 1GB / CPU: 1.4GHz": { mb: 1024, mhz: 1400 },
+  "Memory: 2GB / CPU: 2.8GHz": { mb: 2048, mhz: 2800 },
+  "Memory: 4GB / CPU: 4.8GHz": { mb: 4096, mhz: 4800 },
+  "Memory: 8GB / CPU: 4.8MHz": { mb: 8192, mhz: 4800 },
+  "Memory: 16GB / CPU: 4.8MHz": { mb: 16384, mhz: 4800 },
+  "Memory: 32GB / CPU: 4.8MHz": { mb: 32768, mhz: 4800 }
+}
+
+gcfPricingStructure.typeMapping = {
+    "128Mi": "Memory: 128MB / CPU: 200MHz",
+    "256Mi": "Memory: 256MB / CPU: 400MHz",
+    "512Mi": "Memory: 512MB / CPU: 800MHz",
+    "1Gi": "Memory: 1GB / CPU: 1.4GHz",
+    "2Gi": "Memory: 2GB / CPU: 2.8GHz",
+    "4Gi": "Memory: 4GB / CPU: 4.8GHz",
+    "8Gi": "Memory: 8GB / CPU: 4.8MHz",
+    "16Gi": "Memory: 16GB / CPU: 4.8MHz",
+    "32Gi": "Memory: 32GB / CPU: 4.8MHz"
+}
+
+gcfPricingStructure.genMapping = {
+    "GEN_1": "1",
+    "GEN_2": "2",
 }
 
 module.exports = gcfPricingStructure;

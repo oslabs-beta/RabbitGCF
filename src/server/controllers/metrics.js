@@ -22,21 +22,38 @@ const metricsController = {
     // const url = `https://cloudfunctions.googleapis.com/v2/projects/${parent}/locations/-`;
 
     try {
-      const response = [];
+      // const response = [];
+      const response = {
+        funcList: [],
+        configurations: {},
+      };
       const iterable = funcsClient.listFunctionsAsync(request);
       // console.log(iterable);
       for await (const func of iterable) {
-        // console.log(response.name);
-        response.push(func.name);
+        // console.log('func ======>',func);
+        const testRegex = /.*?locations\/(.*)\/.*?functions\/(.*)/;
+        const testTrim = func.name.match(testRegex);
+        const funcName = testTrim[2];
+        response.funcList.push(funcName);
+        response.configurations[funcName] = {
+          funcRegion: testTrim[1],
+          funcType: func.serviceConfig.availableMemory,
+          funcGeneration: func.environment,
+        }
+
+        // response.push(func.name);
       }
       // console.log(`payload array: ${payload}`);
-      const trimmed = response.map(el => {
-        const regex = /.*?functions\/(.*)/;
-        const trim = el.match(regex);
-        return trim[1];
-      })
+      // const trimmed = response.map(el => {
+      //   const regex = /.*?functions\/(.*)/;
+      //   const trim = el.match(regex);
+      //   return trim[1];
+      // })
       // console.log(`trimmed response: ${trimmed}`);
-      res.locals.funcNames = trimmed;
+      // res.locals.funcNames = trimmed;
+
+      res.locals.funcConfigs = response;
+      console.log(response);
       
       return next();
     } catch (err) {
@@ -69,30 +86,27 @@ const metricsController = {
     try {
       const [ timeSeries ] = await monClient.listTimeSeries(request);
       // console.log(timeSeries);
-      const parsedTimeSeries = timeSeries.map(obj => {
+      const parsedTimeSeries = {};
+      timeSeries.forEach(obj => {
         // console.log(obj.metric.labels.status);
         if (obj.metric.labels.status === 'ok') {
-          const newSeries = {};
           const newPoints = [];
           
           obj.points.forEach(point => {
-            const time = new Date(point.interval.startTime.seconds * 1000);
+            const time = new Date(point.interval.startTime.seconds * 1000).toLocaleString();
             newPoints.push({
               timestamp: time,
               value: Number(point.value.int64Value)
             });
           });
           
-          newSeries.points = newPoints.sort((a, b) => a.timestamp - b.timestamp);
+          // newSeries.points = newPoints.sort((a, b) => a.timestamp - b.timestamp);
           // newSeries.points.map((el) => el.timestamp = el.timestamp.toLocaleString());
-          newSeries.name = obj.resource.labels.function_name;
+          // newSeries.name = obj.resource.labels.function_name;
           // console.log("new Series exec count => ", newSeries);
-
-          return newSeries;
+          parsedTimeSeries[obj.resource.labels.function_name] = newPoints.sort((a, b) => a.timestamp - b.timestamp);
         };
       });
-
-
       res.locals.execution_count = parsedTimeSeries;
 
       return next();
@@ -126,24 +140,25 @@ const metricsController = {
     try {
       const [ timeSeries ] = await monClient.listTimeSeries(request);
       // console.log(timeSeries);
-      const parsedTimeSeries = timeSeries.map(obj => {
-        const newSeries = {};
+      const parsedTimeSeries = {};
+      timeSeries.forEach(obj => {
         const newPoints = [];
 
         obj.points.forEach(point => {
-          const time = new Date(point.interval.startTime.seconds * 1000);
+          const time = new Date(point.interval.startTime.seconds * 1000).toLocaleString();
           newPoints.push({
             timestamp: time,
             value: Math.round(point.value.distributionValue.mean / 1000000) // converting from nanoseconds to milliseconds
           });
         });
 
-        newSeries.points = newPoints.sort((a, b) => a.timestamp - b.timestamp);
+        // newSeries.points = newPoints.sort((a, b) => a.timestamp - b.timestamp);
         // newSeries.points.map((el) => el.timestamp = el.timestamp.toLocaleString());
 
-        newSeries.name = obj.resource.labels.function_name;
+        // newSeries.name = obj.resource.labels.function_name;
+        parsedTimeSeries[obj.resource.labels.function_name] = newPoints.sort((a, b) => a.timestamp - b.timestamp);
 
-        return newSeries;
+        // return newSeries;
       });
 
 
@@ -177,6 +192,7 @@ const metricsController = {
       }
     };
     
+    // setting seconds and milliseconds to 0 so we don't skip in graph
     const normalizeTimestamp = (timestamp) => {
       const date = new Date(timestamp);
       date.setSeconds(0, 0);
@@ -186,34 +202,35 @@ const metricsController = {
     try {
       const [ timeSeries ] = await monClient.listTimeSeries(request);
       // console.log(timeSeries);
-      const parsedTimeSeries = timeSeries.map(obj => {
-        const newSeries = {};
+      const parsedTimeSeries = {};
+      timeSeries.forEach(obj => {
         const newPoints = [];
         
         obj.points.forEach(point => {
-          const time = new Date(point.interval.startTime.seconds * 1000);
+          const time = new Date(point.interval.startTime.seconds * 1000).toLocaleString();
           newPoints.push({
             timestamp: normalizeTimestamp(time),
             value: Math.round(point.value.distributionValue.mean / 1048576 * 100) / 100 // converting from bytes to mebibytes
           });
         });
         
-        newSeries.points = newPoints.sort((a, b) => a.timestamp - b.timestamp);
+        parsedTimeSeries[obj.resource.labels.function_name] = newPoints.sort((a, b) => a.timestamp - b.timestamp);
+        // newSeries.points = newPoints.sort((a, b) => a.timestamp - b.timestamp);
         // newSeries.points.map((el) => el.timestamp = el.timestamp.toLocaleString());
 
 
-        newSeries.name = obj.resource.labels.function_name;
+        // newSeries.name = obj.resource.labels.function_name;
         
-        return newSeries;
+        // return newSeries;
       });
 
-      parsedTimeSeries.forEach(series => {
-        console.log("Parsed Time Series:");
-        console.dir(series, { depth: null }); // Adjust depth as needed
-      });
+      // parsedTimeSeries.forEach(series => {
+      //   console.log("Parsed Time Series:");
+      //   console.dir(series, { depth: null }); // Adjust depth as needed
+      // });
       
       res.locals.user_memory_bytes = parsedTimeSeries;
-      
+
       return next();
     } catch (err) {
       return next(`Could not get user memory bytes data. ERROR: ${err}`);
@@ -226,7 +243,7 @@ const metricsController = {
     const { projectId } = req.params;
     // console.log(`projectId: ${projectId}`);
     const { timeRange } = req.query; // adding timeRange / at this level, it works
-    console.log("timerange => ", timeRange);
+    // console.log("timerange => ", timeRange);
   
     const network_egress = `metric.type="cloudfunctions.googleapis.com/function/network_egress" AND resource.labels.project_id="${projectId}"`;
     const request = {
@@ -245,31 +262,33 @@ const metricsController = {
   
     try {
       const [ timeSeries ] = await monClient.listTimeSeries(request);
-      const parsedTimeSeries = timeSeries.map(obj => {
-        const newSeries = {};
+      const parsedTimeSeries = {};
+      timeSeries.forEach(obj => {
         const newPoints = [];
         
         obj.points.forEach(point => {
-          const time = new Date(point.interval.startTime.seconds * 1000);
+          const time = new Date(point.interval.startTime.seconds * 1000).toLocaleString();
           newPoints.push({
             timestamp: time,
             value: Math.round(point.value.int64Value / 1048576 * 100) / 100 // converting from bytes to mebibytes
           });
         });
         
-        newSeries.points = newPoints.sort((a, b) => a.timestamp - b.timestamp);
+        // newSeries.points = newPoints.sort((a, b) => a.timestamp - b.timestamp);
         // newSeries.points.map((el) => el.timestamp = el.timestamp.toLocaleString());
 
-        newSeries.name = obj.resource.labels.function_name;
+        // newSeries.name = obj.resource.labels.function_name;
+        parsedTimeSeries[obj.resource.labels.function_name] = newPoints.sort((a, b) => a.timestamp - b.timestamp);;
+
         
-        return newSeries;
+        // return newSeries;
       });
       // console.log(timeSeries);
       res.locals.network_egress = parsedTimeSeries;
-      parsedTimeSeries.forEach(series => {
-        console.log("Parsed Time Series:");
-        console.dir(series, { depth: null }); // Adjust depth as needed
-      });
+      // parsedTimeSeries.forEach(series => {
+      //   console.log("Parsed Time Series:");
+      //   console.dir(series, { depth: null }); // Adjust depth as needed
+      // });
   
       return next();
     } catch (err) {
