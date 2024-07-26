@@ -28,6 +28,7 @@
     "express": "^4.19.2",
     "express-session": "^1.18.0",
     "file-loader": "^6.2.0",
+    "google-auth-library": "^9.11.0",
     "mongod": "^2.0.0",
     "mongoose": "^8.4.1",
     "nodemon": "^3.1.2",
