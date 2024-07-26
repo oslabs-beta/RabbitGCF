@@ -44,7 +44,7 @@ const ForecastPage = (props) => {
 
   const getFunctionList = async () => {
     try {
-      const response = await fetch(`/api/metrics/funcs/${projectId}`, {
+      const response = await fetch(`/api/metrics/funcs/${projectId}?timeRange=43200`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       });
@@ -162,7 +162,7 @@ const ForecastPage = (props) => {
       return;
     }
     try {
-      fetch(`api/forecast/${projectId}`,{
+      fetch(`api/forecast/${projectId}?timeRange=43200`,{
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
