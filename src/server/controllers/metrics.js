@@ -20,28 +20,45 @@ const metricsController = {
 		const request = { parent };
 		// const url = `https://cloudfunctions.googleapis.com/v2/projects/${parent}/locations/-`;
 
-		try {
-			const response = [];
-			const iterable = funcsClient.listFunctionsAsync(request);
-			// console.log(iterable);
-			for await (const func of iterable) {
-				// console.log(response.name);
-				response.push(func.name);
-			}
-			// console.log(`payload array: ${payload}`);
-			const trimmed = response.map((el) => {
-				const regex = /.*?functions\/(.*)/;
-				const trim = el.match(regex);
-				return trim[1];
-			});
-			// console.log(`trimmed response: ${trimmed}`);
-			res.locals.funcNames = trimmed;
+    try {
+      // const response = [];
+      const response = {
+        funcList: [],
+        configurations: {},
+      };
+      const iterable = funcsClient.listFunctionsAsync(request);
+      // console.log(iterable);
+      for await (const func of iterable) {
+        // console.log('func ======>',func);
+        const testRegex = /.*?locations\/(.*)\/.*?functions\/(.*)/;
+        const testTrim = func.name.match(testRegex);
+        const funcName = testTrim[2];
+        response.funcList.push(funcName);
+        response.configurations[funcName] = {
+          funcRegion: testTrim[1],
+          funcType: func.serviceConfig.availableMemory,
+          funcGeneration: func.environment,
+        }
 
-			return next();
-		} catch (err) {
-			return next(`Could not get functions list. ERROR: ${err}`);
-		}
-	},
+        // response.push(func.name);
+      }
+      // console.log(`payload array: ${payload}`);
+      // const trimmed = response.map(el => {
+      //   const regex = /.*?functions\/(.*)/;
+      //   const trim = el.match(regex);
+      //   return trim[1];
+      // })
+      // console.log(`trimmed response: ${trimmed}`);
+      // res.locals.funcNames = trimmed;
+
+      res.locals.funcConfigs = response;
+      console.log(response);
+      
+      return next();
+    } catch (err) {
+      return next(`Could not get functions list. ERROR: ${err}`);
+    }
+  },
 
 	executionCount: async (req, res, next) => {
 		// const { funcNames } = res.locals;

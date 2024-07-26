@@ -38,7 +38,8 @@ app.use('/', iamController.generateAccessToken, (req, res) => {
 });
 
 app.get('/api/metrics/funcs/:projectId', metricsController.getFuncs, (req, res) => {
-  return res.status(200).send(res.locals.funcNames);
+  // return res.status(200).send(res.locals.funcNames);
+  return res.status(200).send(res.locals.funcConfigs);
 })
 
 app.get('/api/metrics/execution_count/:projectId', metricsController.executionCount, (req, res) => {
@@ -74,6 +75,7 @@ app.use('*', (req, res) => {
 
 // global error handler
 app.use((err, req, res) => {
+  console.log('ERROR HANDLER INVOKED')
   const defaultErr = {
     log: 'Express error handler caught unknown middleware error',
     status: 500,

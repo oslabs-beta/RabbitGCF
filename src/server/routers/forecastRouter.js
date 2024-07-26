@@ -7,15 +7,14 @@ const metricsController = require('../controllers/metrics.js');
 
 const router = express.Router();
 
-router.post('/', (req, res, next) => {
-  console.log(req.body);
-  console.log('forecast router invoked', new Date());
-  return next();
-  },
+router.post('/:projectId',
   /*retrieve metrics from metric middleware here*/
+  metricsController.executionTimes,
+  metricsController.userMemoryBytes,
   forecastController.calcHistorical, 
   forecastController.forecast, 
   (req, res) => {
+    console.log('forecast calculated');
     res.status(200).json(res.locals.forecastDataSeries);
   });
 
