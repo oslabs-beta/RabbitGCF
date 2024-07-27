@@ -25,6 +25,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import InsightsIcon from '@mui/icons-material/Insights';
 import DataObjectIcon from '@mui/icons-material/DataObject';
+import CloudQueueIcon from '@mui/icons-material/CloudQueue';
 
 const drawerWidth = 240;
 
@@ -115,6 +116,11 @@ export default function NavBar() {
   function functionsClick() {
     console.log('functions clicked')
     navigate('/functions');
+  }
+
+  function projectsClick() {
+    console.log('projects clicked')
+    navigate('/projects');
   }
 
   return (
@@ -233,6 +239,27 @@ export default function NavBar() {
                 <InsightsIcon />
               </ListItemIcon>
               <ListItemText primary={'Forecast'} sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </ListItem>
+          <ListItem key={'Projects'} disablePadding sx={{ display: 'block' }}>
+            <ListItemButton
+              onClick={projectsClick}
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? 'initial' : 'center',
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : 'auto',
+                  justifyContent: 'center',
+                }}
+              >
+                <CloudQueueIcon/>
+              </ListItemIcon>
+              <ListItemText primary={'Projects'} sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
           </ListItem>
         </List>

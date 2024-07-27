@@ -6,9 +6,13 @@ import ForecastPage from './pages/ForecastPage.jsx';
 import ProfilePage from './pages/ProfilePage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import FunctionsPage from './pages/FunctionsPage.jsx';
+import ProjectsPage from './pages/ProjectsPage.jsx';
+import ProjectSetupPage from './pages/ProjectSetupPage.jsx';
 
 const App = () => {
   const [functionName, setFunctionName] = useState("");
+  const [projectList, setProjectList] = useState([]);
+  const [selectedProject, setSelectedProject] = useState(null);
   
   return(
     <div style={{backgroundColor: '#E4EBF7', minHeight: '100vh'}}>
@@ -19,6 +23,8 @@ const App = () => {
           <Route path='/login' element={<LoginPage />}/>
           <Route path='/metrics' element={<MetricsPage functionName={functionName} setFunctionName={setFunctionName}/>}/>
           <Route path='/forecast' element={<ForecastPage functionName={functionName} setFunctionName={setFunctionName}/>}/>
+          <Route path='/projects' element={<ProjectsPage projectList={projectList} setProjectList={setProjectList} selectedProject={selectedProject} setSelectedProject={setSelectedProject}/>}/>
+          <Route path='/projects/setup' element={<ProjectSetupPage projectList={projectList} setProjectList={setProjectList} selectedProject={selectedProject}/>}/>
           <Route path='/profile' element={<ProfilePage />}/>
         </Routes>
       </BrowserRouter>

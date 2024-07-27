@@ -7,7 +7,8 @@ const keyFilename = path.join(__dirname,'../../../refined-engine-424416-p7-60ddb
 // create needed clients
 const funcsClient = new FunctionServiceClient({ keyFilename });
 const monClient = new monitoring.MetricServiceClient({ keyFilename });
-
+// const funcsClient = new FunctionServiceClient();
+// const monClient = new monitoring.MetricServiceClient();
 
 // const metrics = [
 //   'metric.type="cloudfunctions.googleapis.com/function/execution_count"',
