@@ -5,16 +5,26 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import { useDispatch, useSelector } from 'react-redux';
+import { deleteProject, focusProject } from '../slicers/projectsSlice';
 
-export default function DeleteAlert({ projectList, projectIndex, setProjectList, deleteAlertOpen, setDeleteAlertOpen }) {
+export default function DeleteAlert({ projectFocusIndex, deleteAlertOpen, setDeleteAlertOpen }) {
+  const dispatch = useDispatch();
+  const projectList = useSelector(state => state.projects.projectList);
 
   const agree = (e) => {
-    console.log('agree to delete', projectIndex, projectList);
-    let newProjectList = projectList.slice();
-    console.log('before splice', newProjectList);
-    newProjectList = newProjectList.splice(projectIndex, 1);
-    console.log('spliced', newProjectList);
-    setProjectList(newProjectList);
+    // console.log('agree to delete', projectIndex, projectList);
+    // let newProjectList = projectList.slice();
+    // console.log('before splice', newProjectList);
+    // newProjectList = newProjectList.splice(projectIndex, 1);
+    // console.log('spliced', newProjectList);
+    // setProjectList(newProjectList);
+    (() => {
+      console.log('delete index',projectFocusIndex);
+      dispatch(deleteProject(projectFocusIndex));
+      dispatch(focusProject(null));
+    })()
+
     setDeleteAlertOpen(false);
   }
 

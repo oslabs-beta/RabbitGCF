@@ -3,10 +3,13 @@ import { useNavigate } from "react-router-dom";
 import NavBar from '../components/NavBar.jsx';
 import DrawerHeader from "../components/DrawerHeader.jsx";
 import { Box, Typography, Button, FormControl, TextField } from '@mui/material/';
+import { saveProject } from "../slicers/projectsSlice.js";
+import { useDispatch } from "react-redux";
 
 const ProjectSetupPage = ({ projectList, setProjectList, selectedProject }) => {
-  console.log('selectedProject ==>',selectedProject);
+  // console.log('selectedProject ==>',selectedProject);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   
   const [projectName, setProjectName] = useState('');
   const [projectId, setProjectId] = useState('');
@@ -22,14 +25,16 @@ const ProjectSetupPage = ({ projectList, setProjectList, selectedProject }) => {
    * Refactoring should also encrypt serviceAccKey prior to saving to database
    */
   const save = (e) => {
-    console.log('save project clicked')
-    const newProjectList = projectList.slice();
-    newProjectList.push({
-      projectName,
-      projectId,
-      serviceAccKey
-    });
-    setProjectList(newProjectList);
+    // console.log('save project clicked')
+    // const newProjectList = projectList.slice();
+    // setProjectList(newProjectList);
+    (() => {
+      dispatch(saveProject({
+        projectId,
+        projectName,
+        serviceAccKey
+      }))
+    })();
     navigate("/projects");
   }
 
@@ -44,7 +49,7 @@ const ProjectSetupPage = ({ projectList, setProjectList, selectedProject }) => {
       serviceAccKey: projectList[selectedProject].serviceAccKey,
     }
 
-  console.log('fieldValues ==> ',fieldValues);
+  // console.log('fieldValues ==> ',fieldValues);
 
   return (
     <div>
@@ -56,7 +61,7 @@ const ProjectSetupPage = ({ projectList, setProjectList, selectedProject }) => {
           <Typography paragraph>
             <FormControl>
               <TextField
-                sx={{ m: 1, width: 700}}
+                sx={{ m: 1, width: 700, bgcolor: '#FFFFFF'}}
                 required
                 id="projectNameField"
                 label="Project name"
@@ -64,7 +69,7 @@ const ProjectSetupPage = ({ projectList, setProjectList, selectedProject }) => {
                 onChange={e => setProjectName(e.target.value)}
               />
               <TextField
-                sx={{ m: 1, width: 700}}
+                sx={{ m: 1, width: 700, bgcolor: '#FFFFFF'}}
                 required
                 id="projectIdField"
                 label="Project ID"
@@ -72,7 +77,7 @@ const ProjectSetupPage = ({ projectList, setProjectList, selectedProject }) => {
                 onChange={e => setProjectId(e.target.value)}
               />
               <TextField
-                sx={{ m: 1, width: 700}}
+                sx={{ m: 1, width: 700, bgcolor: '#FFFFFF'}}
                 required
                 id="serviceAccKeyField"
                 label="Service account JSON access key"
@@ -87,7 +92,7 @@ const ProjectSetupPage = ({ projectList, setProjectList, selectedProject }) => {
                 <Button variant='outlined' onClick={back}>Back</Button>
               </Box>
               <Box margin={1}>
-                <Button variant='contained' onClick={save}>Save</Button>
+                <Button variant='contained' onClick={() => dispatch(save)}>Save</Button>
               </Box>
             </Box>
           </Typography>

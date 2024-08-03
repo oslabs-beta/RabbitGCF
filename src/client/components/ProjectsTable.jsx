@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DeleteAlert from "./DeleteAlert.jsx";
+import { useSelector, useDispatch } from "react-redux";
+import { focusProject } from "../slicers/projectsSlice.js";
 import { 
   Box, 
   Paper, 
@@ -25,12 +27,17 @@ const columns = [
 
 const projectId = "refined-engine-424416-p7";
 
-export default function ProjectsTable({ projectList, setProjectList, selectedProject, setSelectedProject }) {
+export default function ProjectsTable({ /**projectList, setProjectList,*/ selectedProject, setSelectedProject }) {
+  const dispatch = useDispatch();
+  const projectFocusIndex = useSelector((state) => state.projects.projectFocusIndex)
+
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [deleteAlertOpen, setDeleteAlertOpen] = useState(false);
+  // let projectFocusIndex = null;
 
   const navigate = useNavigate();
+  const projectList = useSelector((state) => state.projects.projectList);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -50,7 +57,12 @@ export default function ProjectsTable({ projectList, setProjectList, selectedPro
 
   const deleteProject = (e) => {
     console.log('delete project clicked', e.target.value);
-    setSelectedProject(e.target.value);
+    (() => {
+      dispatch(focusProject(e.target.value))
+    })();
+    // projectFocusIndex = e.target.value;
+    // console.log('projetFocusIndex==>', projectFocusIndex)
+    // setSelectedProject(e.target.value);
     setDeleteAlertOpen(true);
   }
 
@@ -75,7 +87,7 @@ export default function ProjectsTable({ projectList, setProjectList, selectedPro
               </TableHead>
               <TableBody>
                 {projectList
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((project, index) => {
                     return (
                       <TableRow hover role="checkbox" tabIndex={-1} key={project}>
@@ -95,7 +107,7 @@ export default function ProjectsTable({ projectList, setProjectList, selectedPro
                             </IconButton> */}
                             <Button 
                               startIcon={<DeleteOutlineIcon/>} 
-                              value={index} 
+                              value={index}
                               onClick={deleteProject}
                             />
                           </Box>
@@ -116,7 +128,7 @@ export default function ProjectsTable({ projectList, setProjectList, selectedPro
             onRowsPerPageChange={handleChangeRowsPerPage}
           />
         </Paper>
-        {deleteAlertOpen && <DeleteAlert projectList={projectList} projectIndex={selectedProject} setProjectList={setProjectList} deleteAlertOpen={deleteAlertOpen} setDeleteAlertOpen={setDeleteAlertOpen}/>}
+        {(deleteAlertOpen && projectFocusIndex !== null) && <DeleteAlert projectFocusIndex={projectFocusIndex} deleteAlertOpen={deleteAlertOpen} setDeleteAlertOpen={setDeleteAlertOpen}/>}
     </div>
   );
 }
