@@ -33,9 +33,9 @@ app.use(express.static(path.join(__dirname, './../client')));
 //   return res.status(200).send(res.locals);
 // });
 
-app.use('/', iamController.generateAccessToken, (req, res) => {
-  return res.status(200).send(res.locals.tokenResponse);
-});
+// app.use('/', iamController.generateAccessToken, (req, res) => {
+//   return res.status(200).send(res.locals.tokenResponse);
+// });
 
 app.get('/api/metrics/funcs/:projectId', metricsController.getFuncs, (req, res) => {
   // return res.status(200).send(res.locals.funcNames);
