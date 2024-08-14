@@ -9,12 +9,10 @@ export const userSlice = createSlice({
   },
   reducers: {
     login: (state, action) => {
-      // console.log('login payload ==>', action.payload)
       state.isLoggedIn = true;
       state.authCredentials = action.payload;
     },
     setProfile: (state, action) => {
-      // console.log(action.payload);
       state.profile = action.payload;
     },
     logout: (state, action) => {

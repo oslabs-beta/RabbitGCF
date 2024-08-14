@@ -5,12 +5,11 @@ import ProjectsTable from '../components/ProjectsTable.jsx';
 import { Box, Typography, Button } from '@mui/material/';
 import { useNavigate } from "react-router-dom";
 
-const ProjectsPage = (props) => {
+const ProjectsPage = () => {
   const navigate = useNavigate();
 
   const addProject = (e) => {
     console.log('add project clicked');
-    props.setSelectedProject(null);
     navigate("/projects/setup");
   }
 
@@ -23,7 +22,7 @@ const ProjectsPage = (props) => {
         <Typography paragraph>
           <Button variant="contained" onClick={addProject}>Add Project</Button>
         </Typography>
-        <ProjectsTable projectList={props.projectList} setProjectList={props.setProjectList} selectedProject={props.selectedProject} setSelectedProject={props.setSelectedProject}/>
+        <ProjectsTable />
       </Box>
     </div>
   );

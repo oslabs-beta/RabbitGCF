@@ -94,7 +94,7 @@ const AccountMenu = () => {
               <Divider />
               <MenuItem onClick={logoutClick}>
                 <LogoutIcon />
-                Log out (WIP)
+                Log out
               </MenuItem> 
             </Menu>
         </Box> :
@@ -112,7 +112,7 @@ const AccountMenu = () => {
               onClose={closeMenu}
             >
               <MenuItem onClick={loginClick}>
-                Login with Google
+                Sign In with Google
               </MenuItem>
             </Menu>
         </Box>

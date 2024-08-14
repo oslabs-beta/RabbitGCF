@@ -15,9 +15,8 @@ export default function DeleteAlert({ projectFocusIndex, deleteAlertOpen, setDel
   const agree = (e) => {
     (() => {
       dispatch(deleteProject(projectFocusIndex));
-      dispatch(focusProject(null));
     })()
-
+    
     setDeleteAlertOpen(false);
   }
 
