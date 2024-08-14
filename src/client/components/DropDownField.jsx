@@ -3,7 +3,7 @@ import { FormControl, Select, InputLabel, MenuItem } from "@mui/material";
 
 const DropDownField = ({ fieldType, fieldName = fieldType, optionsList, selected, handleOptionChange }) => {
   return (
-      <FormControl sx={{ m: 'auto', minWidth: 175, maxWidth: 175}}>
+      <FormControl sx={{ m: 'auto', minWidth: 175, maxWidth: 175, bgcolor: '#FAF9F6'}}>
         <InputLabel id="demo-simple-select-autowidth-label">{fieldName}</InputLabel>
         <Select
           labelId="demo-simple-select-autowidth-label"
