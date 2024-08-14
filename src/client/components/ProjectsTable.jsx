@@ -20,8 +20,9 @@ import {
 
 
 const columns = [
-  { id: "projectName", label: "Project", minWidth: 170 },
+  { id: "projectName", label: "Project", minWidth: 100 },
   { id: "projectId", label: "ID", minWidth: 100 },
+  // { id: "status", label: "Status", minWidth: 100 },
   { id: "settings", minWidth: 100 }
 ];
 
@@ -56,20 +57,17 @@ export default function ProjectsTable({ /**projectList, setProjectList,*/ select
   }
 
   const deleteProject = (e) => {
-    console.log('delete project clicked', e.target.value);
+    // console.log('delete project clicked', e.target.value);
     (() => {
       dispatch(focusProject(e.target.value))
     })();
-    // projectFocusIndex = e.target.value;
-    // console.log('projetFocusIndex==>', projectFocusIndex)
-    // setSelectedProject(e.target.value);
     setDeleteAlertOpen(true);
   }
 
   console.log(projectList);
   return (
     <div>
-        <Paper sx={{ width: "100%", overflow: "hidden" }}>
+        <Paper sx={{ width: "95%", overflow: "hidden" }}>
           <TableContainer sx={{ maxHeight: "80vh" }}>
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
@@ -102,14 +100,11 @@ export default function ProjectsTable({ /**projectList, setProjectList,*/ select
                             >
                             Edit
                             </Button>
-                            {/* <IconButton aria-label="delete" value={index} onClick={deleteProject}>
-                              <DeleteOutlineIcon />
-                            </IconButton> */}
                             <Button 
-                              startIcon={<DeleteOutlineIcon/>} 
+                              // startIcon={<DeleteOutlineIcon/>} 
                               value={index}
                               onClick={deleteProject}
-                            />
+                            >Delete</Button>
                           </Box>
                         </TableCell>
                       </TableRow>

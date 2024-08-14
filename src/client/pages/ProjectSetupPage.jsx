@@ -56,7 +56,7 @@ const ProjectSetupPage = ({ projectList, setProjectList, selectedProject }) => {
       <NavBar />
       <Box component="main" sx={{ flexGrow: 1, p: '0px 0px 0px 80px'}}>
         <DrawerHeader />
-        <h1>Projects Setup Page</h1>
+        <h1>Setup Project</h1>
         <Box sx={{width: 700}}>
           <Typography paragraph>
             <FormControl>

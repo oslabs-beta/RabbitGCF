@@ -13,14 +13,7 @@ export default function DeleteAlert({ projectFocusIndex, deleteAlertOpen, setDel
   const projectList = useSelector(state => state.projects.projectList);
 
   const agree = (e) => {
-    // console.log('agree to delete', projectIndex, projectList);
-    // let newProjectList = projectList.slice();
-    // console.log('before splice', newProjectList);
-    // newProjectList = newProjectList.splice(projectIndex, 1);
-    // console.log('spliced', newProjectList);
-    // setProjectList(newProjectList);
     (() => {
-      console.log('delete index',projectFocusIndex);
       dispatch(deleteProject(projectFocusIndex));
       dispatch(focusProject(null));
     })()
