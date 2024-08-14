@@ -17,7 +17,6 @@ const bigQuery = require('./controllers/bigQuery');
 app.use(express.json());
 app.use(express.static(path.join(__dirname, './../client')));
 
-
 // app.use(session({ 
   //   secret: process.env.SESSION_SECRET,
   //   resave: true,

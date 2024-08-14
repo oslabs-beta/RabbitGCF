@@ -4,19 +4,18 @@ export const projectsSlice = createSlice({
   name: 'projects',
   initialState: {
     projectList: [],
-    projectFocusIndex: null,
     setProjectId: '',
   },
   reducers: {
     saveProject: (state, action) => {
-      state.projectList.push(action.payload);
+      console.log(action.payload);
+      const { project, index } = action.payload;
+      if(index) state.projectList[index] = project;
+      else state.projectList.push(project);
     },
     deleteProject: (state, action) => {
       state.projectList.splice(action.payload, 1);
     },
-    focusProject: (state, action) => {
-      state.projectFocusIndex = action.payload;
-    }
   },
 })
 

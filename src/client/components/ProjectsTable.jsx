@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DeleteAlert from "./DeleteAlert.jsx";
 import { useSelector, useDispatch } from "react-redux";
-import { focusProject } from "../slicers/projectsSlice.js";
+import { editProject } from "../slicers/projectsSlice.js";
 import { 
   Box, 
   Paper, 
@@ -16,25 +16,24 @@ import {
   Button, 
   Skeleton, 
   IconButton } from "@mui/material"
-  import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
 
 const columns = [
-  { id: "projectName", label: "Project", minWidth: 170 },
+  { id: "projectName", label: "Project", minWidth: 100 },
   { id: "projectId", label: "ID", minWidth: 100 },
+  // { id: "connectionStatus", label: "Status", minWidth: 100 },
   { id: "settings", minWidth: 100 }
 ];
 
 const projectId = "refined-engine-424416-p7";
 
-export default function ProjectsTable({ /**projectList, setProjectList,*/ selectedProject, setSelectedProject }) {
+export default function ProjectsTable() {
   const dispatch = useDispatch();
-  const projectFocusIndex = useSelector((state) => state.projects.projectFocusIndex)
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [deleteAlertOpen, setDeleteAlertOpen] = useState(false);
-  // let projectFocusIndex = null;
+  const [deleteIndex, setDeleteIndex] = useState(null);
 
   const navigate = useNavigate();
   const projectList = useSelector((state) => state.projects.projectList);
@@ -50,26 +49,18 @@ export default function ProjectsTable({ /**projectList, setProjectList,*/ select
 
   const editProject = (e) => {
     console.log('edit project clicked');
-    console.log('edit button value', e.target.value);
-    setSelectedProject(e.target.value);
-    navigate("/projects/setup");
+    navigate("/projects/setup", { state: { project: projectList[e.target.value], projectListIndex: e.target.value }});
   }
 
   const deleteProject = (e) => {
-    console.log('delete project clicked', e.target.value);
-    (() => {
-      dispatch(focusProject(e.target.value))
-    })();
-    // projectFocusIndex = e.target.value;
-    // console.log('projetFocusIndex==>', projectFocusIndex)
-    // setSelectedProject(e.target.value);
+    setDeleteIndex(e.target.value);
     setDeleteAlertOpen(true);
   }
 
   console.log(projectList);
   return (
     <div>
-        <Paper sx={{ width: "100%", overflow: "hidden" }}>
+        <Paper sx={{ width: "95%", overflow: "hidden" }}>
           <TableContainer sx={{ maxHeight: "80vh" }}>
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
@@ -102,14 +93,11 @@ export default function ProjectsTable({ /**projectList, setProjectList,*/ select
                             >
                             Edit
                             </Button>
-                            {/* <IconButton aria-label="delete" value={index} onClick={deleteProject}>
-                              <DeleteOutlineIcon />
-                            </IconButton> */}
                             <Button 
-                              startIcon={<DeleteOutlineIcon/>} 
+                              // startIcon={<DeleteOutlineIcon/>} 
                               value={index}
                               onClick={deleteProject}
-                            />
+                            >Delete</Button>
                           </Box>
                         </TableCell>
                       </TableRow>
@@ -128,7 +116,7 @@ export default function ProjectsTable({ /**projectList, setProjectList,*/ select
             onRowsPerPageChange={handleChangeRowsPerPage}
           />
         </Paper>
-        {(deleteAlertOpen && projectFocusIndex !== null) && <DeleteAlert projectFocusIndex={projectFocusIndex} deleteAlertOpen={deleteAlertOpen} setDeleteAlertOpen={setDeleteAlertOpen}/>}
+        {(deleteAlertOpen && deleteIndex !== null) && <DeleteAlert projectFocusIndex={deleteIndex} deleteAlertOpen={deleteAlertOpen} setDeleteAlertOpen={setDeleteAlertOpen}/>}
     </div>
   );
 }

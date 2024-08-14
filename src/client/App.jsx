@@ -23,8 +23,8 @@ const App = () => {
           <Route path='/login' element={<LoginPage />}/>
           <Route path='/metrics' element={<MetricsPage functionName={functionName} setFunctionName={setFunctionName}/>}/>
           <Route path='/forecast' element={<ForecastPage functionName={functionName} setFunctionName={setFunctionName}/>}/>
-          <Route path='/projects' element={<ProjectsPage projectList={projectList} setProjectList={setProjectList} selectedProject={selectedProject} setSelectedProject={setSelectedProject}/>}/>
-          <Route path='/projects/setup' element={<ProjectSetupPage projectList={projectList} setProjectList={setProjectList} selectedProject={selectedProject}/>}/>
+          <Route path='/projects' element={<ProjectsPage/>}/>
+          <Route path='/projects/setup' element={<ProjectSetupPage/>}/>
           <Route path='/profile' element={<ProfilePage />}/>
         </Routes>
       </BrowserRouter>

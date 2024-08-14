@@ -1,19 +1,31 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import NavBar from '../components/NavBar.jsx';
 import DrawerHeader from "../components/DrawerHeader.jsx";
 import { Box, Typography, Button, FormControl, TextField } from '@mui/material/';
 import { saveProject } from "../slicers/projectsSlice.js";
 import { useDispatch } from "react-redux";
 
-const ProjectSetupPage = ({ projectList, setProjectList, selectedProject }) => {
-  // console.log('selectedProject ==>',selectedProject);
+const ProjectSetupPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation();
   
   const [projectName, setProjectName] = useState('');
   const [projectId, setProjectId] = useState('');
   const [serviceAccKey, setServiceAccKey] = useState();
+
+  useEffect(() => {
+    if (location.state) {
+      setProjectName(location.state.project.projectName);
+      setProjectId(location.state.project.projectId);
+      setServiceAccKey(location.state.project.serviceAccKey);
+    } else {
+      setProjectName(`e.g., My Project ${99999 - Math.floor(Math.random()*99999)}`);
+      setProjectId(`e.g., refined-engine-${99999 - Math.floor(Math.random()*99999)}-e8`);
+      setServiceAccKey("Paste JSON object key here");
+    }
+  }, [])
 
   const back = (e) => {
     console.log('add project clicked');
@@ -25,47 +37,38 @@ const ProjectSetupPage = ({ projectList, setProjectList, selectedProject }) => {
    * Refactoring should also encrypt serviceAccKey prior to saving to database
    */
   const save = (e) => {
-    // console.log('save project clicked')
-    // const newProjectList = projectList.slice();
-    // setProjectList(newProjectList);
+    const index = (location.state) ? location.state.projectListIndex : null;
     (() => {
-      dispatch(saveProject({
-        projectId,
-        projectName,
-        serviceAccKey
-      }))
+      dispatch(saveProject(
+        {
+          project: {
+            projectId,
+            projectName,
+            serviceAccKey
+          },
+          index,
+        })
+      )
     })();
     navigate("/projects");
   }
-
-  const fieldValues = (selectedProject === null) ? 
-    {
-      projectName: `e.g., My Project ${99999 - Math.floor(Math.random()*99999)}`,
-      projectId: `e.g., refined-engine-${99999 - Math.floor(Math.random()*99999)}-e8`,
-      serviceAccKey: "Paste JSON object key here"
-    } : {
-      projectName: projectList[selectedProject].projectName,
-      projectId: projectList[selectedProject].projectId,
-      serviceAccKey: projectList[selectedProject].serviceAccKey,
-    }
-
-  // console.log('fieldValues ==> ',fieldValues);
 
   return (
     <div>
       <NavBar />
       <Box component="main" sx={{ flexGrow: 1, p: '0px 0px 0px 80px'}}>
         <DrawerHeader />
-        <h1>Projects Setup Page</h1>
+        <h1>Setup Project</h1>
         <Box sx={{width: 700}}>
           <Typography paragraph>
+            { projectId && projectName && serviceAccKey &&
             <FormControl>
               <TextField
                 sx={{ m: 1, width: 700, bgcolor: '#FFFFFF'}}
                 required
                 id="projectNameField"
                 label="Project name"
-                defaultValue={fieldValues.projectName}
+                defaultValue={projectName}
                 onChange={e => setProjectName(e.target.value)}
               />
               <TextField
@@ -73,7 +76,7 @@ const ProjectSetupPage = ({ projectList, setProjectList, selectedProject }) => {
                 required
                 id="projectIdField"
                 label="Project ID"
-                defaultValue={fieldValues.projectId}
+                defaultValue={projectId}
                 onChange={e => setProjectId(e.target.value)}
               />
               <TextField
@@ -83,10 +86,10 @@ const ProjectSetupPage = ({ projectList, setProjectList, selectedProject }) => {
                 label="Service account JSON access key"
                 multiline
                 rows={20}
-                defaultValue={fieldValues.serviceAccKey}
+                defaultValue={serviceAccKey}
                 onChange={e => setServiceAccKey(e.target.value)}
               />
-            </FormControl>
+            </FormControl>}
             <Box sx={{ display: 'flex', justifyContent: 'space-between'}}>
               <Box margin={1}>
                 <Button variant='outlined' onClick={back}>Back</Button>
