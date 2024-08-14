@@ -56,7 +56,7 @@ app.get('/api/metrics/network_egress/:projectId', metricsController.networkEgres
 app.use('/api/auth', require('./routers/authRouter'));
 app.use('/api/user', require('./routers/userRouter'));
 app.use('/api/forecast', require('./routers/forecastRouter'));
-app.use('/api', apiRouter);
+// app.use('/api', apiRouter);
 
 // catch-all route handler
 app.use('*', (req, res) => {
