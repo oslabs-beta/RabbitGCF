@@ -51,6 +51,7 @@ app.get('/api/metrics/network_egress/:projectId', metricsController.networkEgres
 // routers
 app.use('/api/user', require('./routers/userRouter'));
 app.use('/api/forecast', require('./routers/forecastRouter'));
+app.use('/api/project', require('./routers/projectRouter'));
 // app.use('/api', apiRouter);
 
 // catch-all route handler
@@ -64,7 +65,7 @@ app.use((err, req, res) => {
   const defaultErr = {
     log: 'Express error handler caught unknown middleware error',
     status: 500,
-    message: { err: 'An error occurred' },
+    message: 'An error occurred' ,
   };
   const errorObj = Object.assign({}, defaultErr, err);
   console.log(errorObj.log);

@@ -37,23 +37,22 @@ const AccountMenu = () => {
     }, [user.authCredentials]
   )
 
-  useEffect(
-    () => {
-      if (user.profile) {
-        console.log('userProfile useEffect ==>', user.profile);
-        // Fetch request to backend to store login info
-        fetch('/api/user/login', {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: user.profile.name,
-            email: user.profile.email,
-            profile_id: user.profile.id,
-          })
+
+  const loginRequest = () => {
+    if (user.profile) {
+      console.log('userProfile useEffect ==>', user.profile);
+      // Fetch request to backend to store login info
+      fetch('/api/user/login', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: user.profile.name,
+          email: user.profile.email,
+          profile_id: user.profile.id,
         })
-      }
-    }, [user.profile]
-  )
+      })
+    }
+  }
 
   function openMenu(e) {
     setAnchorEl(e.target);
@@ -71,6 +70,7 @@ const AccountMenu = () => {
     onSuccess: (codeResponse) => {
       console.log(codeResponse);
       dispatch(login(codeResponse));
+      loginRequest();
       closeMenu();
     },
     onError: (error) => {
