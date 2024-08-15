@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DeleteAlert from "./DeleteAlert.jsx";
 import { useSelector, useDispatch } from "react-redux";
-import { editProject } from "../slicers/projectsSlice.js";
+import { setProjectList } from "../slicers/projectsSlice.js";
 import { 
   Box, 
   Paper, 
@@ -29,14 +29,30 @@ const projectId = "refined-engine-424416-p7";
 
 export default function ProjectsTable() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [deleteAlertOpen, setDeleteAlertOpen] = useState(false);
   const [deleteIndex, setDeleteIndex] = useState(null);
 
-  const navigate = useNavigate();
+  const user = useSelector( state => state.user);
   const projectList = useSelector((state) => state.projects.projectList);
+
+  useEffect(() => {
+    fetch('/api/project/listing', {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        profile_id: user.profile.id,
+      })
+    })
+      .then(res => res.json())
+      .then(res => {
+        dispatch(setProjectList(res));
+      });
+  }, [])
+
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -48,7 +64,6 @@ export default function ProjectsTable() {
   };  
 
   const editProject = (e) => {
-    console.log('edit project clicked');
     navigate("/projects/setup", { state: { project: projectList[e.target.value], projectListIndex: e.target.value }});
   }
 
@@ -57,7 +72,6 @@ export default function ProjectsTable() {
     setDeleteAlertOpen(true);
   }
 
-  console.log(projectList);
   return (
     <div>
         <Paper sx={{ width: "95%", overflow: "hidden" }}>
@@ -76,14 +90,14 @@ export default function ProjectsTable() {
                   ))}
                 </TableRow>
               </TableHead>
-              <TableBody>
+              {projectList && <TableBody>
                 {projectList
                   // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((project, index) => {
                     return (
                       <TableRow hover role="checkbox" tabIndex={-1} key={project}>
-                        <TableCell>{project.projectName}</TableCell>
-                        <TableCell>{project.projectId}</TableCell>
+                        <TableCell>{project.project_name}</TableCell>
+                        <TableCell>{project.project_id}</TableCell>
                         <TableCell>
                           <Box>
                             <Button sx={{marginRight: 2}}
@@ -103,7 +117,7 @@ export default function ProjectsTable() {
                       </TableRow>
                     );
                   })}
-              </TableBody>
+              </TableBody>}
             </Table>
           </TableContainer>
           <TablePagination

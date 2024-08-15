@@ -68,4 +68,37 @@ projectController.getProject = async (req, res, next) => {
   }
 }
 
+projectController.updateProject = async (req, res, next) => {
+  try {
+    const { id, profile_id, project_id, project_name, key } = req.body;
+
+    const response = await sql`UPDATE projects * SET (project_name, project_id, key) = (${project_name}, ${project_id}, ${key}) WHERE profile_id=${profile_id} AND id=${id}`;
+    res.locals.updatedProject = response;
+
+    return next();
+  } catch {
+    return next({
+      log: `Error in getProject middleware: ${error}`,
+      status: 500,
+      message: 'An error occured updating a project',
+    });
+  }
+}
+
+projectController.deleteProject = async (req, res, next) => {
+  try {
+    const { profile_id, project_id, project_name } = req.body;
+
+    const response = await sql`DELETE FROM projects * WHERE profile_id=${profile_id} AND project_id=${project_id} AND project_name=${project_name}`;
+
+    return next();
+  } catch {
+    return next({
+      log: `Error in getProject middleware: ${error}`,
+      status: 500,
+      message: 'An error occured deleting a project',
+    });
+  }
+}
+
 module.exports = projectController;

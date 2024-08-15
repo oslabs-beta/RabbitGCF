@@ -27,28 +27,8 @@ app.use(express.static(path.join(__dirname, './../client')));
 //   return res.status(200).send(res.locals);
 // });
 
-app.get('/api/metrics/funcs/:projectId', metricsController.getFuncs, (req, res) => {
-  // return res.status(200).send(res.locals.funcNames);
-  return res.status(200).send(res.locals.funcConfigs);
-})
-
-app.get('/api/metrics/execution_count/:projectId', metricsController.executionCount, (req, res) => {
-  return res.status(200).send(res.locals.execution_count);
-});
-
-app.get('/api/metrics/execution_times/:projectId', metricsController.executionTimes, (req, res) => {
-  return res.status(200).send(res.locals.execution_times);
-});
-
-app.get('/api/metrics/user_memory_bytes/:projectId', metricsController.userMemoryBytes, (req, res) => {
-  return res.status(200).send(res.locals.user_memory_bytes);
-});
-
-app.get('/api/metrics/network_egress/:projectId', metricsController.networkEgress, (req, res) => {
-  return res.status(200).send(res.locals.network_egress);
-});
-
 // routers
+app.use('/api/metrics', require('./routers/metricsRouter'))
 app.use('/api/user', require('./routers/userRouter'));
 app.use('/api/forecast', require('./routers/forecastRouter'));
 app.use('/api/project', require('./routers/projectRouter'));

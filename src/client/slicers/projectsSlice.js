@@ -7,19 +7,16 @@ export const projectsSlice = createSlice({
     setProjectId: '',
   },
   reducers: {
-    saveProject: (state, action) => {
-      console.log(action.payload);
-      const { project, index } = action.payload;
-      if(index) state.projectList[index] = project;
-      else state.projectList.push(project);
-    },
     deleteProject: (state, action) => {
       state.projectList.splice(action.payload, 1);
     },
+    setProjectList: (state, action) => {
+      state.projectList = action.payload;
+    }
   },
 })
 
 // Action creators are generated for each case reducer function
-export const { saveProject, deleteProject, focusProject } = projectsSlice.actions
+export const { saveProject, deleteProject, focusProject, setProjectList } = projectsSlice.actions
 
 export default projectsSlice.reducer

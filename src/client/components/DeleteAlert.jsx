@@ -10,11 +10,22 @@ import { deleteProject, focusProject } from '../slicers/projectsSlice';
 
 export default function DeleteAlert({ projectFocusIndex, deleteAlertOpen, setDeleteAlertOpen }) {
   const dispatch = useDispatch();
+  const user = useSelector( state => state.user );
   const projectList = useSelector(state => state.projects.projectList);
 
   const agree = (e) => {
     (() => {
       dispatch(deleteProject(projectFocusIndex));
+      fetch('/api/project/delete', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          profile_id: user.profile.id,
+          project_id: projectList[projectFocusIndex].project_id,
+          project_name: projectList[projectFocusIndex].project_name,
+        })
+      })
+        .then(res => console.log(res));
     })()
     
     setDeleteAlertOpen(false);
@@ -33,7 +44,7 @@ export default function DeleteAlert({ projectFocusIndex, deleteAlertOpen, setDel
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          {"WARNING"}
+          {"CONFIRM"}
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
