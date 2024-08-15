@@ -4,13 +4,16 @@ import NavBar from '../components/NavBar.jsx';
 import DrawerHeader from "../components/DrawerHeader.jsx";
 import { Box, Typography, Button, FormControl, TextField } from '@mui/material/';
 import { saveProject } from "../slicers/projectsSlice.js";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 const ProjectSetupPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
   
+  const user = useSelector( state => state.user.profile );
+  console.log(user);
+
   const [projectName, setProjectName] = useState('');
   const [projectId, setProjectId] = useState('');
   const [serviceAccKey, setServiceAccKey] = useState();
@@ -38,6 +41,7 @@ const ProjectSetupPage = () => {
    */
   const save = (e) => {
     const index = (location.state) ? location.state.projectListIndex : null;
+    
     (() => {
       dispatch(saveProject(
         {
@@ -50,6 +54,20 @@ const ProjectSetupPage = () => {
         })
       )
     })();
+
+    fetch('/api/project/add', {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(
+        {
+          profile_id: user.id,
+          project_id: projectId,
+          project_name: projectName,
+          key: serviceAccKey
+        }
+      )
+    })
+
     navigate("/projects");
   }
 
