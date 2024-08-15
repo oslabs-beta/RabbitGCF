@@ -4,10 +4,12 @@ const userController = {};
 
 userController.createUser = async (req, res, next) => {
   try {
+    console.log(req.body);
     const { name, email, profile_id } = req.body;
 
     const response = await sql`INSERT INTO users (name, email, profile_id) VALUES (${name}, ${email}, ${profile_id}) RETURNING *`;
     res.locals.user = response;
+    console.log('createUser Response ==>',response);
 
     return next();
   } catch (error) {
@@ -24,6 +26,7 @@ userController.getUser = async (req, res, next) => {
     const { profile_id } = req.body;
 
     const response = await sql`SELECT * FROM users WHERE profile_id=${profile_id}`;
+
     res.locals.user = response;
 
     return next();
@@ -35,3 +38,5 @@ userController.getUser = async (req, res, next) => {
     });
   }
 }
+
+module.exports = userController;

@@ -23,10 +23,6 @@ app.use(express.static(path.join(__dirname, './../client')));
 //   saveUninitialized: true
 // }));
 
-// // Initialize passport and sessions
-// app.use(passport.initialize());
-// app.use(passport.session());
-
 // app.post('/bigquery/datasets/:projectId', bigQuery.getDatasets, (req, res) => {
 //   return res.status(200).send(res.locals);
 // });
@@ -53,7 +49,6 @@ app.get('/api/metrics/network_egress/:projectId', metricsController.networkEgres
 });
 
 // routers
-app.use('/api/auth', require('./routers/authRouter'));
 app.use('/api/user', require('./routers/userRouter'));
 app.use('/api/forecast', require('./routers/forecastRouter'));
 // app.use('/api', apiRouter);

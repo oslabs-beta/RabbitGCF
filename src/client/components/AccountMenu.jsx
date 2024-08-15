@@ -30,13 +30,29 @@ const AccountMenu = () => {
         )
           .then(res => res.json())
           .then(res => {
-            // console.log(res);
             dispatch(setProfile(res));
-            console.log(user.profile);
           })
           .catch(err => console.log(err));
       }
     }, [user.authCredentials]
+  )
+
+  useEffect(
+    () => {
+      if (user.profile) {
+        console.log('userProfile useEffect ==>', user.profile);
+        // Fetch request to backend to store login info
+        fetch('/api/user/login', {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: user.profile.name,
+            email: user.profile.email,
+            profile_id: user.profile.id,
+          })
+        })
+      }
+    }, [user.profile]
   )
 
   function openMenu(e) {
@@ -56,7 +72,6 @@ const AccountMenu = () => {
       console.log(codeResponse);
       dispatch(login(codeResponse));
       closeMenu();
-      // Fetch request to backend to store login info
     },
     onError: (error) => {
       alert('Login failed');

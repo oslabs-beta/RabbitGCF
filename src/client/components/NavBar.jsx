@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { styled, useTheme } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import DrawerHeader from './DrawerHeader.jsx';
@@ -26,6 +27,9 @@ import AssessmentIcon from '@mui/icons-material/Assessment';
 import InsightsIcon from '@mui/icons-material/Insights';
 import DataObjectIcon from '@mui/icons-material/DataObject';
 import CloudQueueIcon from '@mui/icons-material/CloudQueue';
+import { Button } from '@mui/material';
+
+import DropDownField from './DropDownField.jsx';
 
 const drawerWidth = 240;
 
@@ -89,6 +93,7 @@ export default function NavBar() {
   const theme = useTheme();
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+  const projectList = useSelector( state => state.projects.projectList );
 
   const handleDrawerOpen = () => {
     setOpen(true);
