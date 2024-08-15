@@ -60,7 +60,6 @@ const ProjectSetupPage = () => {
         <DrawerHeader />
         <h1>Setup Project</h1>
         <Box sx={{width: 700}}>
-          <Typography paragraph>
             { projectId && projectName && serviceAccKey &&
             <FormControl>
               <TextField
@@ -98,7 +97,6 @@ const ProjectSetupPage = () => {
                 <Button variant='contained' onClick={() => dispatch(save)}>Save</Button>
               </Box>
             </Box>
-          </Typography>
         </Box>
       </Box>
     </div>

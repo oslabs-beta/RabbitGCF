@@ -19,9 +19,7 @@ const ProjectsPage = () => {
       <Box component="main" sx={{ flexGrow: 1, p: '0px 0px 0px 80px'}}>
         <DrawerHeader />
         <h1>Projects Page</h1>
-        <Typography paragraph>
-          <Button variant="contained" onClick={addProject}>Add Project</Button>
-        </Typography>
+        <Button variant="contained" onClick={addProject} sx={{m: '0px 0px 20px 0px'}}>Add Project</Button>
         <ProjectsTable />
       </Box>
     </div>
