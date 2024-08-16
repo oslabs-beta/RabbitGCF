@@ -3,7 +3,6 @@ const passport = require('passport');
 const session  = require('express-session');
 const path = require('path');
 const dotenv = require('dotenv');
-const apiRouter = require('./routes/apiRouter');
 
 dotenv.config({ path: './.env' });
 const PORT = 3000;
@@ -52,7 +51,6 @@ app.get('/api/metrics/network_egress/:projectId', metricsController.networkEgres
 app.use('/api/user', require('./routers/userRouter'));
 app.use('/api/forecast', require('./routers/forecastRouter'));
 app.use('/api/project', require('./routers/projectRouter'));
-// app.use('/api', apiRouter);
 
 // catch-all route handler
 app.use('*', (req, res) => {
