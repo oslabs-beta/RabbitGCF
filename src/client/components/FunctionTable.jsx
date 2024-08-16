@@ -45,12 +45,37 @@ export default function FunctionTable(props) {
     navigate("/forecast");
   };
 
-  const projectId = "refined-engine-424416-p7";
+  const [projectId, setProjectId] = useState('');
+
+  // const getProjectId = async() => {
+  //   try {
+  //     const response = await fetch(`/api/getProjectId`, {
+  //       method: 'GET',
+  //       headers: { 'Content-Type': 'application/json' },
+  //     });
+  //     const data = await response.json();
+  //     console.log(data);
+  //     setProjectId(data);
+  //   } catch (error) {
+  //     console.log('Error in getProjectId: ', error);
+  //   }
+  // }
+
+  // useEffect(() => {
+  //   getProjectId();
+  // }, []);
 
   const getFunctionList = async () => {
     try {
+      const projectIdResponse = await fetch(`/api/getProjectId`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const projectIdData = await projectIdResponse.json();
+      console.log(projectIdData);
+      setProjectId(projectId);
       const response = await fetch(
-        `/api/metrics/funcs/${projectId}`, 
+        `/api/metrics/funcs/${projectIdData}`, 
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },

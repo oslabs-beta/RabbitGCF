@@ -8,7 +8,6 @@ import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, L
 import gcfPricingStructure from '../../../gcfPricingStructure';
 import DropDownField from '../components/DropDownField.jsx';
 
-
 const ForecastPage = (props) => {
   const [isLoaded, setLoaded] = useState(false);
   const [skeleton, setSkeleton] = useState(true);
@@ -39,8 +38,25 @@ const ForecastPage = (props) => {
   
   const [funcList, setfuncList] = useState([]);
   const [configurations, setConfigurations] = useState();
+  const [projectId, setProjectId] = useState('');
 
-  const projectId = 'refined-engine-424416-p7';
+  const getProjectId = async() => {
+    try {
+      const response = await fetch(`/api/getProjectId`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const data = await response.json();
+      console.log(data);
+      setProjectId(data);
+    } catch (error) {
+      console.log('Error in getProjectId: ', error);
+    }
+  }
+
+  useEffect(() => {
+    getProjectId();
+  }, []);
 
   const getFunctionList = async () => {
     try {
@@ -68,7 +84,7 @@ const ForecastPage = (props) => {
 
   useEffect(() => {
     getFunctionList();
-  }, []);
+  }, [projectId]);
 
   const updateFields = (optionType, selectedOption, configs = configurations) => {
     switch (optionType) {
