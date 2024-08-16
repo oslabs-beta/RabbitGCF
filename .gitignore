@@ -1,0 +1,7 @@
+.DS_STORE
+.env
+node_modules
+package-lock.json
+build
+google-cloud-sdk*
+refined-engine*
