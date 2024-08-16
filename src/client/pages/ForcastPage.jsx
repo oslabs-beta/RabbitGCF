@@ -36,12 +36,11 @@ const ForecastPage = () => {
 
   const getFunctionList = async () => {
     try {
-      const response = await fetch(`/api/metrics/funcs/${projectId}`, {
+      const response = await fetch(`/api/metrics/funcs/${projectId}?timeRange=43200`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       });
       const data = await response.json();
-      // console.log('data ==>', data.funcList);
 
       setfuncList(data.funcList);
       setConfigurations(data.configurations);
@@ -72,7 +71,6 @@ const ForecastPage = () => {
         setGenerationOptions(Object.keys(gcfPricingStructure.gcfRegionTiers[selectedOption]));
         break;
       case 'GCF-Generation':
-        // console.log('UpdateFields option Generation:', configs[selectedOption]);
         setSelectedGen(gcfPricingStructure.genMapping[configs[selectedOption].funcGeneration]);
         break;
       default:
@@ -81,24 +79,19 @@ const ForecastPage = () => {
   }
 
   const handleOptionChange = (e) => {
-    // console.log(e.target.name);
     switch (e.target.name) {
       case 'Function':
-        console.log('switched Functions');
         setSelectedFunc(e.target.value);
         updateFields('Function', e.target.value);
         break;
       case 'Type':
-        console.log('switched Types')
         setSelectedType(e.target.value);
         break;
       case 'Region':
-        console.log('switched Region')
         setSelectedRegion(e.target.value);
         updateFields('Region', e.target.value);
         break;
       case 'GCF-Generation':
-        console.log('switched Generations')
         setSelectedGen(e.target.value);
         break;
       default:
@@ -123,7 +116,6 @@ const ForecastPage = () => {
 
   const forecastSubmit = () => {
     setFetching(true);
-    console.log('forecast button clicked');
     const forecastArgs = {
       functionName: document.getElementsByName('Function')[0].value,
       type: document.getElementsByName('Type')[0].value,
@@ -134,7 +126,7 @@ const ForecastPage = () => {
     }
 
     try {
-      fetch(`api/forecast/${projectId}`,{
+      fetch(`api/forecast/${projectId}?timeRange=43200`,{
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -152,7 +144,6 @@ const ForecastPage = () => {
           }
         })
         .then(response => {
-          console.log('fetched data ==>',response);
           setDataSeries(response);
           setFilteredDataSeries(response);
         });
