@@ -1,8 +1,9 @@
 const path = require('path');
+require('dotenv').config();
 const monitoring = require('@google-cloud/monitoring');
 const { FunctionServiceClient } = require('@google-cloud/functions').v2;
 
-const keyFilename = path.join(__dirname,'../../../refined-engine-424416-p7-60ddb1f75e87.json');
+const keyFilename = path.join(__dirname,`../../../util/${process.env.PROJECT_KEY}`);
 
 // create needed clients
 const funcsClient = new FunctionServiceClient({ keyFilename });

@@ -7,8 +7,6 @@ import { FormGroup, FormControlLabel, Checkbox, TextField, Button, CircularProgr
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Label } from 'recharts';
 import gcfPricingStructure from '../../../gcfPricingStructure';
 import DropDownField from '../components/DropDownField.jsx';
-const dotenv = require('dotenv');
-
 
 const ForecastPage = (props) => {
   const [isLoaded, setLoaded] = useState(false);
@@ -41,8 +39,6 @@ const ForecastPage = (props) => {
   const [funcList, setfuncList] = useState([]);
   const [configurations, setConfigurations] = useState();
   const [projectId, setProjectId] = useState('');
-
-  // const projectId = 'refined-engine-424416-p7';
 
   const getProjectId = async() => {
     try {
@@ -88,7 +84,7 @@ const ForecastPage = (props) => {
 
   useEffect(() => {
     getFunctionList();
-  }, []);
+  }, [projectId]);
 
   const updateFields = (optionType, selectedOption, configs = configurations) => {
     switch (optionType) {
