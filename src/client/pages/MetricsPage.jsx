@@ -54,7 +54,7 @@ const MetricsPage = (props) => {
       );
       const data = await response.json();
       setFunctionList(data.funcList);
-      if (data[0] && props.functionName === '') props.setFunctionName(data[0]);
+      if (data.funcList[0] && props.functionName === '') props.setFunctionName(data.funcList[0]);
     } catch (error) {
       console.log("Error in getFunctionList: ", error);
     }

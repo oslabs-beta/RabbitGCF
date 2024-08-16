@@ -3,7 +3,6 @@ const passport = require('passport');
 const session  = require('express-session');
 const path = require('path');
 const dotenv = require('dotenv');
-const apiRouter = require('./routes/apiRouter');
 
 dotenv.config({ path: './.env' });
 const PORT = 3000;
@@ -17,16 +16,11 @@ const bigQuery = require('./controllers/bigQuery');
 app.use(express.json());
 app.use(express.static(path.join(__dirname, './../client')));
 
-
 // app.use(session({ 
   //   secret: process.env.SESSION_SECRET,
   //   resave: true,
 //   saveUninitialized: true
 // }));
-
-// // Initialize passport and sessions
-// app.use(passport.initialize());
-// app.use(passport.session());
 
 // app.post('/bigquery/datasets/:projectId', bigQuery.getDatasets, (req, res) => {
 //   return res.status(200).send(res.locals);
@@ -54,10 +48,9 @@ app.get('/api/metrics/network_egress/:projectId', metricsController.networkEgres
 });
 
 // routers
-app.use('/api/auth', require('./routers/authRouter'));
 app.use('/api/user', require('./routers/userRouter'));
 app.use('/api/forecast', require('./routers/forecastRouter'));
-app.use('/api', apiRouter);
+app.use('/api/project', require('./routers/projectRouter'));
 
 // catch-all route handler
 app.use('*', (req, res) => {
@@ -70,7 +63,7 @@ app.use((err, req, res) => {
   const defaultErr = {
     log: 'Express error handler caught unknown middleware error',
     status: 500,
-    message: { err: 'An error occurred' },
+    message: 'An error occurred' ,
   };
   const errorObj = Object.assign({}, defaultErr, err);
   console.log(errorObj.log);

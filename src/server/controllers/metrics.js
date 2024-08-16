@@ -1,8 +1,21 @@
+const path = require('path');
 const monitoring = require('@google-cloud/monitoring');
 const { FunctionServiceClient } = require('@google-cloud/functions').v2;
 
-const funcsClient = new FunctionServiceClient();
-const monClient = new monitoring.MetricServiceClient();
+const keyFilename = path.join(__dirname,'../../../refined-engine-424416-p7-60ddb1f75e87.json');
+
+// create needed clients
+const funcsClient = new FunctionServiceClient({ keyFilename });
+const monClient = new monitoring.MetricServiceClient({ keyFilename });
+// const funcsClient = new FunctionServiceClient();
+// const monClient = new monitoring.MetricServiceClient();
+
+// const metrics = [
+//   'metric.type="cloudfunctions.googleapis.com/function/execution_count"',
+//   'metric.type="cloudfunctions.googleapis.com/function/execution_times"',
+//   'metric.type="cloudfunctions.googleapis.com/function/instance_count"',
+//   'metric.type="cloudfunctions.googleapis.com/function/user_memory_bytes"'
+// ];
 
 const metricsController = {
   getFuncs: async (req, res, next) => {

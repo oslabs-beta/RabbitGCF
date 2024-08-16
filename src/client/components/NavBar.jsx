@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { styled, useTheme } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import DrawerHeader from './DrawerHeader.jsx';
@@ -25,6 +26,10 @@ import HomeIcon from '@mui/icons-material/Home';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import InsightsIcon from '@mui/icons-material/Insights';
 import DataObjectIcon from '@mui/icons-material/DataObject';
+import CloudQueueIcon from '@mui/icons-material/CloudQueue';
+import { Button } from '@mui/material';
+
+import DropDownField from './DropDownField.jsx';
 
 const drawerWidth = 240;
 
@@ -88,6 +93,7 @@ export default function NavBar() {
   const theme = useTheme();
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+  const projectList = useSelector( state => state.projects.projectList );
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -107,14 +113,19 @@ export default function NavBar() {
     navigate('/metrics');
   }
 
-  function forcastClick() {
-    console.log('forcast clicked')
+  function forecastClick() {
+    console.log('forecast clicked')
     navigate('/forecast');
   }
 
   function functionsClick() {
     console.log('functions clicked')
     navigate('/functions');
+  }
+
+  function projectsClick() {
+    console.log('projects clicked')
+    navigate('/projects');
   }
 
   return (
@@ -190,7 +201,7 @@ export default function NavBar() {
               >
                 <DataObjectIcon />
               </ListItemIcon>
-              <ListItemText primary={'Metrics'} sx={{ opacity: open ? 1 : 0 }} />
+              <ListItemText primary={'Functions'} sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
           </ListItem>
           <ListItem key={'Metrics'} disablePadding sx={{ display: 'block' }}>
@@ -214,9 +225,9 @@ export default function NavBar() {
               <ListItemText primary={'Metrics'} sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
           </ListItem>
-          <ListItem key={'Forcast'} disablePadding sx={{ display: 'block' }}>
+          <ListItem key={'Forecast'} disablePadding sx={{ display: 'block' }}>
             <ListItemButton
-              onClick={forcastClick}
+              onClick={forecastClick}
               sx={{
                 minHeight: 48,
                 justifyContent: open ? 'initial' : 'center',
@@ -232,7 +243,28 @@ export default function NavBar() {
               >
                 <InsightsIcon />
               </ListItemIcon>
-              <ListItemText primary={'Forcast'} sx={{ opacity: open ? 1 : 0 }} />
+              <ListItemText primary={'Forecast'} sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </ListItem>
+          <ListItem key={'Projects'} disablePadding sx={{ display: 'block' }}>
+            <ListItemButton
+              onClick={projectsClick}
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? 'initial' : 'center',
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : 'auto',
+                  justifyContent: 'center',
+                }}
+              >
+                <CloudQueueIcon/>
+              </ListItemIcon>
+              <ListItemText primary={'Projects'} sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
           </ListItem>
         </List>
