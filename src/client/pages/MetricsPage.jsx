@@ -19,13 +19,10 @@ const MetricsPage = (props) => {
   const [networkData, setNetworkData] = useState([]);
   const [selected, setSelected] = useState(false);
 
-  // default function to render
-  // const [functionName, setFunctionName] = useState("");
-
   const [skeleton, setSkeleton] = useState(true);
   const [timeRange, setTimeRange] = useState(60);
 
-  const selectTimeframe = [ // adding timeframes & minutes
+  const selectTimeframe = [
     { label: "1 hour", value: 60},
     { label: "12 hours", value: 720},
     { label: "1 day", value: 1440},
@@ -37,10 +34,9 @@ const MetricsPage = (props) => {
 
   function handleFunctionSelect(e) {
     props.setFunctionName(e.target.value);
-    console.log(props.functionName);
   }
 
-  function handleTimeRangeSelect(e) { // adding this functionality
+  function handleTimeRangeSelect(e) {
     setTimeRange(e.target.value);
     setSelected(true);
   }
@@ -57,7 +53,6 @@ const MetricsPage = (props) => {
         }
       );
       const data = await response.json();
-      console.log("functionList: ", data.funcList);
       setFunctionList(data.funcList);
       if (data.funcList[0] && props.functionName === '') props.setFunctionName(data.funcList[0]);
     } catch (error) {
@@ -85,7 +80,6 @@ const MetricsPage = (props) => {
 
   const getExecutionCounts = async () => {
     try {
-      console.log("execution count reload");
       const response = await fetch(
         `/api/metrics/execution_count/${projectId}?timeRange=${timeRange}`,
         {
@@ -94,9 +88,6 @@ const MetricsPage = (props) => {
         }
       );
       const data = await response.json();
-      // test data not available
-      // delete data['getCharacters'];
-      console.log("executionCount data: ", data);
       setExecutionCountData(data);
 
     } catch (error) {
@@ -114,7 +105,6 @@ const MetricsPage = (props) => {
         }
       );
       const data = await response.json();
-      console.log("executionTime data: ", data);
       setExecutionTimeData(data);
     } catch (error) {
       console.log("Error in getExecutionTimes: ", error);
@@ -131,7 +121,6 @@ const MetricsPage = (props) => {
         }
       );
       const data = await response.json();
-      console.log("memory data: ", data);
       setMemoryData(data);
     } catch (error) {
       console.log("Error in getMemoryBytes: ", error);
@@ -148,7 +137,6 @@ const MetricsPage = (props) => {
         }
       );
       const data = await response.json();
-      console.log("egress data: ", data);
       setNetworkData(data);
     } catch (error) {
       console.log("Error in getNetworkEgress: ", error);
@@ -221,7 +209,6 @@ const MetricsPage = (props) => {
         <Typography paragraph>
           These are your metrics:
         </Typography>
-        {/* <div className='metrics-container'> */}
         <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr'}}>
           <div style={{marginBottom: '20px'}}>
             <Typography style={{display: 'flex', justifyContent: 'center'}}>
