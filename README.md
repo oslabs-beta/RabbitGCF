@@ -29,7 +29,7 @@ Set up your configuration, add your Google Cloud project ID to your .env file to
 
 Start the application:
 
-`npm start`
+`npm run dev`
 
 ## Existing Features
 

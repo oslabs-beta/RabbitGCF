@@ -7,6 +7,7 @@ import { FormGroup, FormControlLabel, Checkbox, TextField, Button, CircularProgr
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Label } from 'recharts';
 import gcfPricingStructure from '../../../gcfPricingStructure';
 import DropDownField from '../components/DropDownField.jsx';
+const dotenv = require('dotenv');
 
 
 const ForecastPage = (props) => {
@@ -39,8 +40,27 @@ const ForecastPage = (props) => {
   
   const [funcList, setfuncList] = useState([]);
   const [configurations, setConfigurations] = useState();
+  const [projectId, setProjectId] = useState('');
 
-  const projectId = 'refined-engine-424416-p7';
+  // const projectId = 'refined-engine-424416-p7';
+
+  const getProjectId = async() => {
+    try {
+      const response = await fetch(`/api/getProjectId`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const data = await response.json();
+      console.log(data);
+      setProjectId(data);
+    } catch (error) {
+      console.log('Error in getProjectId: ', error);
+    }
+  }
+
+  useEffect(() => {
+    getProjectId();
+  }, []);
 
   const getFunctionList = async () => {
     try {
