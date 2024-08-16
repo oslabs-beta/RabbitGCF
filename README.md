@@ -17,19 +17,31 @@ RabbitGCF is a Google Cloud Function visualizer and cost optimization tool desig
 
 To get started with RabbitGCF, clone the repository:
 
-`git clone <repository-url>`
+`git clone https://github.com/oslabs-beta/RabbitGCF.git`
 
 Navigate to the project directory and install dev dependencies:
 
 `npm install`
 
-Install the Google Cloud SDK by following [Google’s installation instructions](https://cloud.google.com/sdk/docs/install)
+Set up your Google Cloud Function configurations and have your Google Cloud project ID available. 
 
-Set up your configuration, add your Google Cloud project ID to your .env file to enable access to your project’s Cloud Functions
+Create a .env file with a `PROJECT_ID` and set it to your Google Cloud project ID.
+
+Create a Service Account at https://console.cloud.google.com/iam-admin/serviceaccounts. Click your Google Cloud Functions project and click the "Create Service Account" at the top of the page. Give your service account any name and id you would like. Add the next step, give your service account the roles "Cloud Functions Viewer" and "Monitoring Viewer" to enable read only access to your Functions. Click "Continue" and optionally fill out the "Grant user access to this service account" fields or skip it and click "Done". You now have a Functions read only service account. 
+
+Click the blue hyperlink of the service account under the "Email" column. At the top of the page, click on the "Keys" tab. Create a new key with the "Add Key" button. Choose the JSON key type and click "Create". Your browser will download a JSON key file. Take this JSON file and insert it into the "util" folder in your repository.
+
+Create a `PROJECT_KEY` variable and set it to the name of your access key including the .json extension. 
+
+Your .env file should look something like this:
+```
+PROJECT_ID=[INSERT PROJECT ID HERE]
+PROJECT_KEY=[INSERT PROJECT KEY HERE].json
+```
 
 Start the application:
 
-`npm start`
+`npm run dev`
 
 ## Existing Features
 
@@ -50,6 +62,6 @@ Contributions, suggestions and reports of any encountered issues from the Open S
 ## Developers
 
 - Brendan Lam | [Github](https://github.com/gitbrendanlam) | [Linkedin](https://www.linkedin.com/in/brendanlam/)
-- Daniel Park | [Github](https://github.com/dpark001) | [Linkedin]()
+- Daniel Park | [Github](https://github.com/dpark001) | [Linkedin](https://www.linkedin.com/in/dpark001/)
 - Wilson Chen | [Github](https://github.com/Wilson7chen) | [Linkedin](https://www.linkedin.com/in/wilson7chen/)
 - Alexandra Thorne | [Github](https://github.com/AlexaThr) | [Linkedin](http://linkedin.com/in/alexathorne)

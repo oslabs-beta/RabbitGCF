@@ -41,7 +41,25 @@ const MetricsPage = (props) => {
     setSelected(true);
   }
 
-  const projectId = "refined-engine-424416-p7";
+  const [projectId, setProjectId] = useState('');
+
+  const getProjectId = async() => {
+    try {
+      const response = await fetch(`/api/getProjectId`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const data = await response.json();
+      console.log(data);
+      setProjectId(data);
+    } catch (error) {
+      console.log('Error in getProjectId: ', error);
+    }
+  }
+
+  useEffect(() => {
+    getProjectId();
+  }, []);
 
   const getFunctionList = async () => {
     try {
@@ -60,9 +78,9 @@ const MetricsPage = (props) => {
     }
   }
   
-  // useEffect(() => {
-  //   getFunctionList();
-  // }, [])
+  useEffect(() => {
+    getFunctionList();
+  }, [projectId])
 
   // useEffect(() => { // added this useEffect
   //   if (selected) {
@@ -144,7 +162,6 @@ const MetricsPage = (props) => {
   };
 
   useEffect(() => {
-    getFunctionList();
     getExecutionCounts();
     getExecutionTimes();
     getMemoryBytes();

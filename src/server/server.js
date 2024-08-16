@@ -26,6 +26,10 @@ app.use(express.static(path.join(__dirname, './../client')));
 //   return res.status(200).send(res.locals);
 // });
 
+app.get('/api/getProjectId', (req, res) => {
+  return res.status(200).json(process.env.PROJECT_ID);
+})
+
 app.get('/api/metrics/funcs/:projectId', metricsController.getFuncs, (req, res) => {
   // return res.status(200).send(res.locals.funcNames);
   return res.status(200).send(res.locals.funcConfigs);
