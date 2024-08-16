@@ -49,7 +49,7 @@ Contributions, suggestions and reports of any encountered issues from the Open S
 
 ## Developers
 
-- Brendan Lam | [Github]() | [Linkedin]()
-- Daniel Park | [Github]() | [Linkedin]()
-- Wilson Chen | [Github]() | [Linkedin]()
-- Alexandra Thorne | [Github](http://github.com/AlexaThr) | [Linkedin](http://linkedin.com/in/alexathorne)
+- Brendan Lam | [Github](https://github.com/gitbrendanlam) | [Linkedin](https://www.linkedin.com/in/brendanlam/)
+- Daniel Park | [Github](https://github.com/dpark001) | [Linkedin]()
+- Wilson Chen | [Github](https://github.com/Wilson7chen) | [Linkedin](https://www.linkedin.com/in/wilson7chen/)
+- Alexandra Thorne | [Github](https://github.com/AlexaThr) | [Linkedin](http://linkedin.com/in/alexathorne)
