@@ -116,7 +116,7 @@ const ForecastPage = (props) => {
   }
 
   const filterData = (e) => {
-    filteringOptions[e.target.name] = (filteringOptions[e.target.name]) ? false : true;
+    filteringOptions[e.target.name] = !filteringOptions[e.target.name];
     const filteredData = dataSeries.map(dataPointObj => {
       const point = {};
       for (const costType in dataPointObj) {
